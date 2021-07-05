@@ -1,0 +1,4 @@
+,name,gender,fever,cough,test1,test2,test3,test4
+0,Jack,M,Y,N,P,N,N,N
+1,Jim,M,Y,Y,N,N,N,N
+2,Mary,F,Y,N,P,N,P,N

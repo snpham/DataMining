@@ -105,6 +105,23 @@ def zscore_normalization(fileName=None, attribute=None, single_val=None,
     return pd_attr[attr + '_znorm'].tolist()
 
 
+def mean(datalist):
+    return sum(datalist)/len(datalist)
+
+
+def median(datalist):
+    datalist.sort()
+    mid = len(datalist) // 2
+    return (datalist[mid] + datalist[~mid]) / 2
+
+
+def mode(datalist, type='numeric'):
+    from collections import Counter
+    c = Counter(datalist)
+    return [k for k, v in c.items() if v == c.most_common(1)[0][1]]
+
+
+
 if __name__ == '__main__':
 
     # norm for a single value
@@ -113,3 +130,15 @@ if __name__ == '__main__':
     
     val = zscore_normalization(single_val=73600, mean_val=54000, std_val=16000)
     print(val)
+
+    datalist = [30, 47, 50, 52, 52, 56, 110, 36, 60, 63, 70, 70]
+    ret = mean(datalist)
+    print(ret)
+
+    datalist = [30, 47, 50, 52, 52, 56, 110, 36, 60, 63, 70, 70]
+    ret = median(datalist)
+    print(ret)
+
+    datalist = [30, 47, 50, 52, 52, 56, 110, 36, 60, 63, 70, 70]
+    ret = mode(datalist)
+    print(ret)
