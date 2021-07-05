@@ -14,7 +14,7 @@ def dissimilarity_nominal(dataset=None, p=None, m=None, weights=None):
     of m or to assign greater weight to the matches in attributes
     having a larger number of states
     return: dissimilarity matrix
-    only testes for single column
+    only tested for single column
     """
     if dataset is not None:
         dis_mat = np.zeros((len(dataset), (len(dataset))))
@@ -43,7 +43,7 @@ def similarity_nominal(dataset=None, p=None, m=None, weights=None):
     of m or to assign greater weight to the matches in attributes
     having a larger number of states
     return: similarity matrix
-    only testes for single column
+    only tested for single column
     """
     if dataset is not None:
         dis_mat = dissimilarity_nominal(dataset=dataset, p=p, m=m, 
@@ -128,6 +128,74 @@ def similarity_binary(dataset=None, q=None, r=None, s=None, t=None, symmetric=Tr
             return round(q/(q+r+s), 2)
 
 
+def dissimilarity_numeric(dataset=None):
+
+    # normalize the dataset
+    dataset = (dataset-dataset.min())/((dataset.max()-dataset.min())*(1-0)+0)
+    dataset['copy'] = dataset.values
+    
+    # use distance measure to find dissimilarity
+    dis_mat = np.zeros((len(dataset), (len(dataset))))
+    for i in range(0, len(dis_mat)):
+        for j in range(0, len(dis_mat)):
+            dis_mat[i, j] = euclidean_distance(dataset=None, 
+                                               x=[dataset.iloc[i, 0]], 
+                                               y=[dataset.iloc[j, 0]])
+
+    return dis_mat
+
+
+def similarity_numeric(dataset=None):
+    """computes the similarity b/t two objects (for numeric
+    attributes). Input a single column dataframe
+    :param dataset: pandas dataframe to perform simiarity analysis
+    :return: similarity matrix
+    """
+    dis_mat = dissimilarity_numeric(dataset=dataset)
+    sim_mat = np.subtract(1, dis_mat)
+    return sim_mat
+
+
+def dissimilarity_ordinal(dataset=None, order={'fair':1, 'good':2, 'excellent':3}):
+    """computes the dissimilarity b/t two objects (for ordinal
+    attributes). Input a single column dataframe
+    :param dataset: pandas dataframe to perform dissimiarity analysis
+    :param order: dictionary for rank of ordinal values
+    :return: dissimilarity matrix
+    """
+    # checking for ordinal consistencies
+    states = set()
+    for obj in dataset.iloc[:, 0]:
+        states.add(obj)
+    for state in states:
+        if state in order:
+            continue
+        else:
+            raise KeyError(f'no ordinal value {state}')
+
+    # step 1: replace each ordinal value with its rank
+    dataset = dataset.iloc[:, 0].replace(order).to_frame()
+
+    # step 2 & 3: normalize the dataset and use distance measure 
+    # to find dissimilarity
+    dis_mat = dissimilarity_numeric(dataset=dataset)
+
+    return dis_mat
+
+
+def similarity_ordinal(dataset=None, order={'fair':1, 'good':2, 'excellent':3}):
+    """computes the similarity b/t two objects (for ordinal
+    attributes). Input a single column dataframe
+    :param dataset: pandas dataframe to perform simiarity analysis
+    :param order: dictionary for rank of ordinal values
+    :return: similarity matrix
+    """
+    dis_mat = dissimilarity_ordinal(dataset=dataset, order=order)
+    sim_mat = np.subtract(1, dis_mat)
+    return sim_mat
+
+
+## numerical dissimilarity/similarity
 def manhattan_distance(dataset=None, x=None, y=None):
     """
     :param dataset: two object dataset with numeric attributes
@@ -193,6 +261,7 @@ if __name__ == '__main__':
 
 
     ## nominal dissimilarity/similarity
+
     # df_mixed = pd.DataFrame()
     # df_mixed['test1_nom'] = ['code A', 'code B', 'code C', 'code A']
     # df_mixed['test2_ord'] = ['excellent', 'fair', 'good', 'excellent']
@@ -202,20 +271,24 @@ if __name__ == '__main__':
     # print(df_mixed)
     df_nominal = df_mixed[['test1_nom']]
     # print(df_nominal)
-    dis_mat = dissimilarity_nominal(dataset=df_nominal, p=None, m=None, weights=None)
+    dis_mat_nom = dissimilarity_nominal(dataset=df_nominal, 
+                                        p=None, m=None, weights=None)
     # print(dis_mat)
     # [[0. 1. 1. 0.]
     # [1. 0. 1. 1.]
     # [1. 1. 0. 1.]
     # [0. 1. 1. 0.]]
-    sim_mat = similarity_nominal(dataset=df_nominal, p=None, m=None, weights=None)
+    sim_mat_nom = similarity_nominal(dataset=df_nominal, 
+                                     p=None, m=None, weights=None)
     # print(sim_mat)
     # [[1. 0. 0. 1.]
     # [0. 1. 0. 0.]
     # [0. 0. 1. 0.]
     # [1. 0. 0. 1.]]
 
+
     ## binary dissimilarity/similarity
+
     # df_binary = pd.DataFrame()
     # df_binary['name'] = ['Jack', 'Jim', 'Mary']
     # df_binary['gender'] = ['M', 'M', 'F']
@@ -236,65 +309,94 @@ if __name__ == '__main__':
     # print(df_binary)
     df_binary_asym = df_binary[['fever', 'cough', 'test1', 'test2', 
                                 'test3', 'test4']]
-    dis_mat = dissimilarity_binary(dataset=df_binary_asym, q=None, r=None, 
+    dis_mat_bin = dissimilarity_binary(dataset=df_binary_asym, q=None, r=None, 
                                    s=None, t=None, symmetric=False)
     # print(dis_mat)
     # [[0.   0.67 0.33]
     # [0.67 0.   0.75]
     # [0.33 0.75 0.  ]]
-    sim_mat = similarity_binary(dataset=df_binary_asym, q=None, r=None, 
+    sim_mat_bin = similarity_binary(dataset=df_binary_asym, q=None, r=None, 
                                 s=None, t=None, symmetric=False)
     # print(sim_mat)
     # [[1.   0.33 0.67]
     # [0.33 1.   0.25]
     # [0.67 0.25 1.  ]]
-    dis_val = dissimilarity_binary(dataset=None, q=1, r=1, 
+    dis_val_bin = dissimilarity_binary(dataset=None, q=1, r=1, 
                                 s=1, t=1, symmetric=False)
     # print(dis_val) # 0.67
-    dis_val = dissimilarity_binary(dataset=None, q=1, r=1, 
+    dis_val_bin = dissimilarity_binary(dataset=None, q=1, r=1, 
                                 s=2, t=0, symmetric=False)
     # print(dis_val) # 0.75
 
 
-    # numeric data dissimilarity
+    ## numeric data dissimilarity
 
     # manhattan distance
-    result = manhattan_distance(x=[10, 20, 10], y=[10, 20, 20])
-    # print(result) # 10
+    result_man_list = manhattan_distance(x=[10, 20, 10], y=[10, 20, 20])
+    # print(result_man) # 10
     dataset = pd.DataFrame(data=np.array([[10, 20, 10], [10, 20, 20]]), 
                            columns=['a', 'b', 'c'])
-    result = manhattan_distance(dataset=dataset, x=None, y=None)
-    # print(result) # 10
+    result_man_df = manhattan_distance(dataset=dataset, x=None, y=None)
+    # print(result_man) # 10
+    assert np.allclose(result_man_df, result_man_list)
 
     # euclidean distance
-    result = euclidean_distance(x=[0, 3, 4, 5], y=[7, 6, 3, -1])
-    # print(result) # 9.7468
+    result_eucl_list = euclidean_distance(x=[0, 3, 4, 5], y=[7, 6, 3, -1])
+    # print(result_eucl) # 9.7468
     dataset = pd.DataFrame(data=np.array([[0, 3, 4, 5], [7, 6, 3, -1]]))
-    result = euclidean_distance(dataset=dataset, x=None, y=None)
-    # print(result) # 9.7468
+    result_eucl_df = euclidean_distance(dataset=dataset, x=None, y=None)
+    # print(result_eucl) # 9.7468
+    assert np.allclose(result_eucl_list, result_eucl_df)
 
     # minkowski distance
-    result = minkowski_distance(x=[0, 3, 4, 5], y=[7, 6, 3, -1], p_value=3)
-    print(result) # 8.373
+    result_mink_list = minkowski_distance(x=[0, 3, 4, 5], y=[7, 6, 3, -1], p_value=3)
+    # print(result_mink) # 8.373
     dataset = pd.DataFrame(data=np.array([[0, 3, 4, 5], [7, 6, 3, -1]]))
-    result = minkowski_distance(dataset=dataset, x=None, y=None, p_value=3)
-    print(result) # 8.373
-    exit()
+    result_mink_df = minkowski_distance(dataset=dataset, x=None, y=None, p_value=3)
+    # print(result_mink) # 8.373
+    assert np.allclose(result_mink_list, result_mink_df)
+
+    # testing on mixed_sample
+    dataset = pd.read_csv('data/mixed_sample.csv', index_col=0)
+    dataset = dataset[['test3_num']]
+    result_eucl_mixedsample = dissimilarity_numeric(dataset=dataset)
+    print(result_eucl_mixedsample)
+    # [[0.     0.5476 0.4524 0.4048]
+    # [0.5476 0.     1.     0.1429]
+    # [0.4524 1.     0.     0.8571]
+    # [0.4048 0.1429 0.8571 0.    ]]
+
+
+    ## ordinal dissimilarity
+
+    df_mixed = pd.read_csv('data/mixed_sample.csv', index_col=0)
+    df_ordinal = df_mixed[['test2_ord']]
+    dis_mat_ord = dissimilarity_ordinal(dataset=df_ordinal, 
+                                    order={'fair':1, 'good':2, 'excellent':3})
+    print(dis_mat_ord)
+    # [[0.  1.  0.5 0. ]
+    # [1.  0.  0.5 1. ]
+    # [0.5 0.5 0.  0.5]
+    # [0.  1.  0.5 0. ]]
+    sim_mat_ord = similarity_ordinal(dataset=df_ordinal, 
+                                 order={'fair':1, 'good':2, 'excellent':3})
+    print(sim_mat_ord)
+    # [[1.  0.  0.5 1. ]
+    # [0.  1.  0.5 0. ]
+    # [0.5 0.5 1.  0.5]
+    # [1.  0.  0.5 1. ]]
+
 
     # hamming distance
     result = hamming_distance('CATCATCATCATCATCATCTTTTT',
                               'CATCATCTTCATCATCATCTTTTT')
-    print(result)
+    # print(result)
 
     # hamming distance 2
     result = hamming_distance('ATGCATCATCATCATCATCTTTTT',
                               'CATCATCTTCATCATCATCTTTTT')
-    print(result)
+    # print(result)
 
-
-
-
-
-    # minkowski distance
+    # cosine similarity
     result = cosine_similarity([5, 0, 3, 0, 2, 0, 0, 2, 0, 0], [3, 0, 2, 0, 1, 1, 0, 1, 0, 1])
-    print(result)
+    # print(result)

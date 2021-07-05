@@ -42,7 +42,7 @@ def min_max_normalization(fileName=None, attribute=None, old_min=None, old_max=N
         return round((single_val-old_min)/(old_max-old_min)*(new_max-new_min)+new_min, 6)
 
     csv_file = pd.read_csv(fileName)
-
+    
     if attribute == 'close':
         attr = 'Close/Last'
     else:
