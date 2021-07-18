@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
-from pandas.core.reshape.tile import qcut
+
+
+"""this actually includes dissimilarity analysis functions, not just distances
+"""
 
 
 def dissimilarity_nominal(dataset=None, p=None, m=None, weights=None):
@@ -129,7 +132,11 @@ def similarity_binary(dataset=None, q=None, r=None, s=None, t=None, symmetric=Tr
 
 
 def dissimilarity_numeric(dataset=None):
-
+    """computes the dissimilarity b/t two objects (for numeric
+    attributes). Input a single column dataframe
+    :param dataset: pandas dataframe to perform dissimiarity analysis
+    :return: dissimilarity matrix
+    """
     # normalize the dataset
     dataset = (dataset-dataset.min())/((dataset.max()-dataset.min())*(1-0)+0)
     dataset['copy'] = dataset.values
@@ -235,6 +242,37 @@ def minkowski_distance(dataset=None, x=None, y=None, p_value=None):
     sum_val = sum(np.abs(a-b)**p_value for a, b in zip(x, y))
 
     return np.round(sum_val**(1 / p_value), 4)
+
+
+def dissimilarity_mixed(dataset=None, types=None, order=None, symmetric=None):
+    """used when the dataframe includes mixed attributes
+    :param dataset: dataframe for dissimilarity analysis
+    :param types: dictionary of attribute types based on column names
+    :param order: order for ordinal types (currently only one set)
+    :param symmetric: symmetric/asymmetric for binary types (currently for 1 set)
+    :return: mixed dissimilarity matrix
+    in work; does not account for null values
+    """
+    # print(types['test1_nom'])
+    dis_mats = []
+    for col in enumerate(dataset.columns):
+        if types[col[1]] == 'nominal':
+            dis_mats.append(dissimilarity_nominal(dataset=dataset[[col[1]]]))
+        elif types[col[1]] == 'ordinal':
+            dis_mats.append(dissimilarity_ordinal(dataset=dataset[[col[1]]], 
+                                                  order=order))
+        elif types[col[1]] == 'numeric':
+            dis_mats.append(dissimilarity_numeric(dataset=dataset[[col[1]]]))
+        elif types[col[1]] == 'binary':
+            dis_mats.append(dissimilarity_binary(dataset=dataset[[col[1]]], 
+                                                 symmetric=symmetric))
+
+    dis_mat = np.zeros((len(dataset), len(dataset)))
+    for array in dis_mats:
+        dis_mat += array
+    dis_mat /= len(types)
+
+    return dis_mat
 
 
 def hamming_distance(s1, s2):
@@ -360,7 +398,7 @@ if __name__ == '__main__':
     dataset = pd.read_csv('data/mixed_sample.csv', index_col=0)
     dataset = dataset[['test3_num']]
     result_eucl_mixedsample = dissimilarity_numeric(dataset=dataset)
-    print(result_eucl_mixedsample)
+    # print(result_eucl_mixedsample)
     # [[0.     0.5476 0.4524 0.4048]
     # [0.5476 0.     1.     0.1429]
     # [0.4524 1.     0.     0.8571]
@@ -373,19 +411,39 @@ if __name__ == '__main__':
     df_ordinal = df_mixed[['test2_ord']]
     dis_mat_ord = dissimilarity_ordinal(dataset=df_ordinal, 
                                     order={'fair':1, 'good':2, 'excellent':3})
-    print(dis_mat_ord)
+    # print(dis_mat_ord)
     # [[0.  1.  0.5 0. ]
     # [1.  0.  0.5 1. ]
     # [0.5 0.5 0.  0.5]
     # [0.  1.  0.5 0. ]]
     sim_mat_ord = similarity_ordinal(dataset=df_ordinal, 
                                  order={'fair':1, 'good':2, 'excellent':3})
-    print(sim_mat_ord)
+    # print(sim_mat_ord)
     # [[1.  0.  0.5 1. ]
     # [0.  1.  0.5 0. ]
     # [0.5 0.5 1.  0.5]
     # [1.  0.  0.5 1. ]]
 
+    
+    ## mixed dissimilarity
+
+    dataset = pd.read_csv('data/mixed_sample.csv', index_col=0)
+    types = {'test1_nom':'nominal', 'test2_ord':'ordinal', 'test3_num':'numeric'}
+    order = {'fair':1, 'good':2, 'excellent':3}
+    dis_mixed = dissimilarity_mixed(dataset=dataset, types=types, order=order, symmetric=False)
+    print(dis_mixed)
+    # [[0.         0.8492     0.6508     0.13493333]
+    # [0.8492     0.         0.83333333 0.7143    ]
+    # [0.6508     0.83333333 0.         0.7857    ]
+    # [0.13493333 0.7143     0.7857     0.        ]]
+
+
+    ## nonmetric cosine similarity
+    result = cosine_similarity([5, 0, 3, 0, 2, 0, 0, 2, 0, 0], [3, 0, 2, 0, 1, 1, 0, 1, 0, 1])
+    print(result) # 0.9356
+
+
+    ## additional from slides
 
     # hamming distance
     result = hamming_distance('CATCATCATCATCATCATCTTTTT',
@@ -397,6 +455,3 @@ if __name__ == '__main__':
                               'CATCATCTTCATCATCATCTTTTT')
     # print(result)
 
-    # cosine similarity
-    result = cosine_similarity([5, 0, 3, 0, 2, 0, 0, 2, 0, 0], [3, 0, 2, 0, 1, 1, 0, 1, 0, 1])
-    # print(result)

@@ -2,24 +2,7 @@ import numpy as np
 import pandas as pd
 
 
-def correlation(fn1, fn2, att1, att2):
 
-    data1 = pd.read_csv(fn1)
-    data2 = pd.read_csv(fn2)
-
-    a = data1[att1].tolist()
-    b = data2[att2].tolist()
-    A = data1[att1].mean()
-    B = data2[att2].mean()
-    N = len(data1[att1])
-    stddeva = data1[att1].std()
-    stddevb = data2[att2].std()
-
-    corr = sum((x-A)*(y-B) for x, y in zip(a, b))/(N*stddeva*stddevb)
-#     corr = (sum((x*y) for x, y in zip(a, b))-N*A*B)/(N*stddeva*stddevb)    
-#     corr = data1[att1].corr(data2[att2])
-
-    return round(corr, 6)
 
 
 def min_max_normalization(fileName=None, attribute=None, old_min=None, old_max=None, 
