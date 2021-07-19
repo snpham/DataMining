@@ -8,20 +8,16 @@ import pandas as pd
 def min_max_normalization(fileName=None, attribute=None, old_min=None, old_max=None, 
                           new_min=0, new_max=1, single_val=None):
     '''
-    Input Parameters:
-        fileName: The comma seperated file that must be considered for 
-        the normalization with the different format first line removed
-        attribute: The attribute for which you are performing the 
-        normalization
-        
-    Output:
-        Return an object of list type of normalized values
-        Please do not return a list of strings
-        Please do not print anything to stdout
-        Use only Python3
-        Points will be deducted if you do not follow exact instructions
+    :param fileName: filename of csv for normalization
+    :param attribute: name of attribute to normalize within file
+    :param old_min: minimum value of original data list 
+    :param old_max: maximum value of original data list
+    :param new_min: new minimum to normalize to
+    :param new_max: new maximum to normalize to
+    :param single_val: compute only for a single case
     '''
-    if single_val:
+
+    if single_val is not None:
         return round((single_val-old_min)/(old_max-old_min)*(new_max-new_min)+new_min, 6)
 
     csv_file = pd.read_csv(fileName)
@@ -52,19 +48,15 @@ def min_max_normalization(fileName=None, attribute=None, old_min=None, old_max=N
 def zscore_normalization(fileName=None, attribute=None, single_val=None, 
                          mean_val=None, std_val=None):
     '''
-    Input Parameters:
-        fileName: The comma seperated file that must be considered for the 
-        normalization with the different format first line removed
-        attribute: The attribute for which you are performing the normalization
-        
-    Output:
-        Return an object of list type of normalized values
-        Please do not return a list of strings
-        Please do not print anything to stdout
-        Use only Python3
-        Points will be deducted if you do not follow exact instructions
+    :param fileName: filename of csv to be normalized
+    :param attribute: attribute name
+    :param single_val: compute using a single value (instead of a file)
+    :param mean_val: mean value of the attribute (for single_val compute)
+    :param std_val: standard deviation of the attribute (for single val)
+    :return: list of z-score normalized values
+    not tested using mean absolute deviation
     '''
-    if single_val:
+    if single_val is not None:
         return round((single_val-mean_val)/std_val, 6)
 
     csv_file = pd.read_csv(fileName)
@@ -82,9 +74,12 @@ def zscore_normalization(fileName=None, attribute=None, single_val=None,
     else:
         pd_attr[attr] = pd_attr[attr].astype(float)
 
+    attr_list = pd_attr[attr].to_list()
+    attr_mean =  mean(attr_list)
+    mean_abs_dev = 1/len(attr_list)*sum(np.abs(x-attr_mean) for x in attr_list)
     pd_attr[attr + '_znorm'] = \
-        (pd_attr[attr]-pd_attr[attr].mean())/pd_attr[attr].std()
-    
+        (pd_attr[attr]-attr_mean)/mean_abs_dev
+
     return pd_attr[attr + '_znorm'].tolist()
 
 
@@ -107,12 +102,18 @@ def mode(datalist, type='numeric'):
 
 if __name__ == '__main__':
 
-    # norm for a single value
+    # norm for a single value - min/max
     val = min_max_normalization(single_val=73600, old_min=12000, old_max=98000)
-    print(val)
+    assert np.allclose(val, 0.716279)
     
+    # norm for a single value - z-score
     val = zscore_normalization(single_val=73600, mean_val=54000, std_val=16000)
-    print(val)
+    assert np.allclose(val, 1.225)
+
+    fileName = 'Data/AMAT_HistoricalData_1623003561951.csv'
+    attribute = 'low'
+    vals = zscore_normalization(fileName, attribute)
+    # print(vals)
 
     datalist = [30, 47, 50, 52, 52, 56, 110, 36, 60, 63, 70, 70]
     ret = mean(datalist)
@@ -125,3 +126,4 @@ if __name__ == '__main__':
     datalist = [30, 47, 50, 52, 52, 56, 110, 36, 60, 63, 70, 70]
     ret = mode(datalist)
     print(ret)
+

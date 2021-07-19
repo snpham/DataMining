@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from data_helpers import mean
 
 
 def chi_squared(df):

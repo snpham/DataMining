@@ -285,6 +285,17 @@ def hamming_distance(s1, s2):
     return (len(s1) - result) / len(s1)
 
 
+def simple_matching_distance(list1, list2):
+    """
+    """
+    p = len(list1)
+    match = 0
+    for i, j in zip(list1, list2):
+        if list[i] == list[j]:
+            match += 1
+    return round((p-match)/p, 4)
+
+
 def cosine_similarity(x,y):
     numerator = sum(a*b for a, b in zip(x,y))
     sqrtx = round(np.sqrt(sum([a*a for a in x])), 3)
