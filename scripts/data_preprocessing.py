@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from data_helpers import mean
 
 
 def chi_squared(df):
@@ -91,6 +92,39 @@ def covariance(df=None, fn1=None, fn2=None, attr1=None, attr2=None):
     return sum((x-A)*(y-B) for x, y in zip(a, b))/(N)
 
 
+def support(df, arg1, arg2):
+    """
+    """
+    df['sum_row'] = df.sum(axis=1)
+    df.loc["sum_col"] = df.sum()
+    nrow = len(df)-1
+    ncol = len(df.columns)-1
+    return df.loc[arg1, arg2] / df.loc['sum_col', 'sum_row']
+
+
+def confidence(df, arg1, arg2):
+    """
+    """
+    df['sum_row'] = df.sum(axis=1)
+    df.loc["sum_col"] = df.sum()
+    nrow = len(df)-1
+    ncol = len(df.columns)-1
+    
+    return df.loc[arg1, arg2] / df.loc[arg1, 'sum_row']
+
+
+def lift(df, arg1, arg2):
+    """
+    """
+    df['sum_row'] = df.sum(axis=1)
+    df.loc["sum_col"] = df.sum()
+    nrow = len(df)-1
+    ncol = len(df.columns)-1
+    total = df.loc['sum_col', 'sum_row']
+    # lift = P(AandB)/(P(A)*P(B)) = support(AandB)/(P(A)*P(B))
+    return df.loc[arg1, arg2] / (df.loc[arg1, 'sum_row']*df.loc['sum_col', arg2])*total
+
+
 
 if __name__ == '__main__':
 
@@ -111,3 +145,17 @@ if __name__ == '__main__':
     df = pd.read_csv('data/correlation_sample.csv', index_col=0)
     cov = covariance(df)
     assert np.allclose(cov, 7.0)
+
+    # example 3 - support and confidence
+    df_sup = pd.DataFrame(index=['LikeSki', 'NotLikeSki'], 
+                        columns=['PlayFootball', 'NotPlayFootball'])
+    df_sup.loc['LikeSki', 'PlayFootball'] = 1700
+    df_sup.loc['NotLikeSki', 'PlayFootball'] = 400
+    df_sup.loc['LikeSki', 'NotPlayFootball'] = 800
+    df_sup.loc['NotLikeSki', 'NotPlayFootball'] = 1000
+    sup = support(df_sup.copy(), 'LikeSki', 'PlayFootball')
+    assert np.allclose(sup, 0.435897435)
+    conf = confidence(df_sup.copy(), 'LikeSki', 'PlayFootball')
+    assert np.allclose(conf, 0.68)
+    lft = lift(df_sup.copy(), 'LikeSki', 'PlayFootball')
+    assert np.allclose(lft, 1.2628571428571)
