@@ -99,7 +99,10 @@ def support(df, arg1, arg2):
     df.loc["sum_col"] = df.sum()
     nrow = len(df)-1
     ncol = len(df.columns)-1
-    return df.loc[arg1, arg2] / df.loc['sum_col', 'sum_row']
+    try:
+        return df.loc[arg1, arg2] / df.loc['sum_col', 'sum_row']
+    except KeyError:
+        return df.loc[arg2, arg1] / df.loc['sum_col', 'sum_row']
 
 
 def confidence(df, arg1, arg2):
@@ -109,8 +112,11 @@ def confidence(df, arg1, arg2):
     df.loc["sum_col"] = df.sum()
     nrow = len(df)-1
     ncol = len(df.columns)-1
-    
-    return df.loc[arg1, arg2] / df.loc[arg1, 'sum_row']
+
+    try:
+        return df.loc[arg1, arg2] / df.loc[arg1, 'sum_row']
+    except KeyError:
+        return df.loc[arg2, arg1] / df.loc['sum_col', arg1]
 
 
 def lift(df, arg1, arg2):
@@ -122,8 +128,10 @@ def lift(df, arg1, arg2):
     ncol = len(df.columns)-1
     total = df.loc['sum_col', 'sum_row']
     # lift = P(AandB)/(P(A)*P(B)) = support(AandB)/(P(A)*P(B))
-    return df.loc[arg1, arg2] / (df.loc[arg1, 'sum_row']*df.loc['sum_col', arg2])*total
-
+    try:
+        return df.loc[arg1, arg2] / (df.loc[arg1, 'sum_row']*df.loc['sum_col', arg2])*total
+    except KeyError:
+        return df.loc[arg2, arg1] / (df.loc['sum_col', arg1]*df.loc[arg2, 'sum_row'])*total
 
 
 if __name__ == '__main__':
@@ -153,9 +161,59 @@ if __name__ == '__main__':
     df_sup.loc['NotLikeSki', 'PlayFootball'] = 400
     df_sup.loc['LikeSki', 'NotPlayFootball'] = 800
     df_sup.loc['NotLikeSki', 'NotPlayFootball'] = 1000
+    # LikeSki -> PlayFootball
     sup = support(df_sup.copy(), 'LikeSki', 'PlayFootball')
     assert np.allclose(sup, 0.435897435)
     conf = confidence(df_sup.copy(), 'LikeSki', 'PlayFootball')
     assert np.allclose(conf, 0.68)
     lft = lift(df_sup.copy(), 'LikeSki', 'PlayFootball')
     assert np.allclose(lft, 1.2628571428571)
+
+    # example 6d - lift
+    df_sup = pd.DataFrame(index=['C', 'NotC'], 
+                        columns=['B', 'NotB'])
+    df_sup.loc['C', 'B'] = 400
+    df_sup.loc['NotC', 'B'] = 200
+    df_sup.loc['C', 'NotB'] = 350
+    df_sup.loc['NotC', 'NotB'] = 50
+    # B -> C
+    lft = lift(df_sup.copy(), 'B', 'C')
+    assert np.allclose(lft, 0.888, rtol=1e-2)
+    lft = lift(df_sup.copy(), 'B', 'NotC')
+    assert np.allclose(lft, 1.33, rtol=1e-2)
+
+    # example 6d - chi2 test 2
+    chi2, dof = chi_squared(df_sup)
+    assert np.allclose(chi2, 55.56, rtol=1e-2)
+    # DOF = (r-1)(c-1) = 1 -> chi2 to reject at 0.001 = 10.828
+
+    # example 6d - support and confidence and lift
+    df_sup = pd.DataFrame(index=['Coffee', 'NotCoffee'], 
+                        columns=['Tea', 'NotTea'])
+    df_sup.loc['Coffee', 'Tea'] = 150
+    df_sup.loc['NotCoffee', 'Tea'] = 50
+    df_sup.loc['Coffee', 'NotTea'] = 750
+    df_sup.loc['NotCoffee', 'NotTea'] = 50
+    # Tea -> Coffee
+    sup = support(df_sup.copy(), 'Tea', 'Coffee')
+    assert np.allclose(sup, 0.15)
+    conf = confidence(df_sup.copy(), 'Tea', 'Coffee')
+    assert np.allclose(conf, 0.75, rtol=1e-2)
+    lft = lift(df_sup.copy(), 'Tea', 'Coffee')
+    assert np.allclose(lft, 0.833, rtol=1e-2)
+
+    # example 6d - lift vs chi2
+    df_sup = pd.DataFrame(index=['cereal', 'Notcereal'], 
+                        columns=['basketball', 'Notbasketball'])
+    df_sup.loc['cereal', 'basketball'] = 2000
+    df_sup.loc['Notcereal', 'basketball'] = 1000
+    df_sup.loc['cereal', 'Notbasketball'] = 1750
+    df_sup.loc['Notcereal', 'Notbasketball'] = 250
+    # cereal -> basketball
+    lft = lift(df_sup.copy(), 'cereal', 'basketball')
+    assert np.allclose(lft, 0.89, rtol=1e-2) # negatively corr.
+    lft = lift(df_sup.copy(), 'basketball', 'Notcereal')
+    assert np.allclose(lft, 1.33, rtol=1e-2) # positively corr.
+    chi2, dof = chi_squared(df_sup)
+    assert np.allclose(chi2, 277.78, rtol=1e-2) # corr. since > 10.828
+    
