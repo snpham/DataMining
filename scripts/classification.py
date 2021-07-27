@@ -29,6 +29,7 @@ def info_subset(lens1, lens2):
 
     return info_i
 
+
 def split_info(p_list, Dtot):
     """
     """
@@ -36,6 +37,20 @@ def split_info(p_list, Dtot):
 
     return sum(-p_i/Dtot*np.log(p_i/Dtot)/np.log(2) for p_i in p_list)
 
+
+def naive_bayesian(df=None, label_dict=None, class_label=None, single=False):
+    """
+    """
+    items = next(iter(class_label.items()))
+    df_class = df[df[items[0]] == items[1]]
+    if single:
+        return len(df_class)/len(df)
+
+    len_i = 1
+    for item in label_dict.items():
+        len_i *= len(df_class[df_class[item[0]] == item[1]])/len(df[df[items[0]] == items[1]])
+
+    return len_i
 
 
 if __name__ == '__main__':
@@ -112,7 +127,7 @@ if __name__ == '__main__':
     lens_credit_ratingy = [len(credit_ratingset1yes), len(credit_ratingset2yes)]
     info_credit_rating = info_subset(lens1=lens_credit_rating, lens2=lens_credit_ratingy)
     gain_credit_rating = info_D - info_credit_rating
-    
+
     assert np.allclose(gain_age, 0.246, rtol=1e-2)
     assert np.allclose(gain_income, 0.029, rtol=1e-2)
     assert np.allclose(gain_student, 0.151, rtol=1e-2)
@@ -123,5 +138,52 @@ if __name__ == '__main__':
     assert np.allclose(split_income, 1.556, rtol=1e-2)
     gain_ratio_income = gain_income/split_income
     assert np.allclose(gain_ratio_income, 0.0187, rtol=1e-2)
+
+    # example 8c - naive bayesian
+    data = pd.read_csv('data/decisiontree_ex.csv', skipinitialspace=True)
+
+    label_dict = {'age': '<=30'}
+    class_label = {'buys_computer': 'yes'}
+    len1 = naive_bayesian(df=data, label_dict=label_dict, class_label=class_label)
+    assert np.allclose(len1, 0.222, rtol=1e-2)
+    label_dict = {'age': '<=30'}
+    class_label = {'buys_computer': 'no'}
+    len2 = naive_bayesian(df=data, label_dict=label_dict, class_label=class_label)
+    assert np.allclose(len2, 0.6, rtol=1e-2)
+    label_dict = {'income': 'medium'}
+    class_label = {'buys_computer': 'yes'}
+    len3 = naive_bayesian(df=data, label_dict=label_dict, class_label=class_label)
+    assert np.allclose(len3, 0.444, rtol=1e-2)
+    label_dict = {'income': 'medium'}
+    class_label = {'buys_computer': 'no'}
+    len4 = naive_bayesian(df=data, label_dict=label_dict, class_label=class_label)
+    assert np.allclose(len4, 0.4, rtol=1e-2)
+    label_dict = {'student': 'yes'}
+    class_label = {'buys_computer': 'yes'}
+    len5 = naive_bayesian(df=data, label_dict=label_dict, class_label=class_label)
+    assert np.allclose(len5, 0.667, rtol=1e-2)
+    label_dict = {'student': 'yes'}
+    class_label = {'buys_computer': 'no'}
+    len6 = naive_bayesian(df=data, label_dict=label_dict, class_label=class_label)
+    assert np.allclose(len6, 0.2, rtol=1e-2)
+    label_dict = {'credit_rating': 'fair'}
+    class_label = {'buys_computer': 'yes'}
+    len7 = naive_bayesian(df=data, label_dict=label_dict, class_label=class_label)
+    assert np.allclose(len7, 0.667, rtol=1e-2)
+    label_dict = {'credit_rating': 'fair'}
+    class_label = {'buys_computer': 'no'}
+    len8 = naive_bayesian(df=data, label_dict=label_dict, class_label=class_label)
+    assert np.allclose(len8, 0.4, rtol=1e-2)
+
+    X_no = {'age': '<=30', 'income': 'medium', 'student': 'yes', 'credit_rating': 'fair'}
+    class_label = {'buys_computer': 'yes'}
+    PX_yes = naive_bayesian(df=data, label_dict=X_no, class_label=class_label)
+    assert np.allclose(PX_yes, 0.0438, rtol=1e-2)
+    X_yes = {'age': '<=30', 'income': 'medium', 'student': 'yes', 'credit_rating': 'fair'}
+    class_label = {'buys_computer': 'no'}
+    PX_no = naive_bayesian(df=data, label_dict=X_yes, class_label=class_label)
+    assert np.allclose(PX_no, 0.0192, rtol=1e-2)
+
+
 
 
