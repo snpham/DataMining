@@ -1,5 +1,8 @@
 import numpy as np
 import pandas as pd
+import plotly.express as px
+import plotly.figure_factory as ff
+import plotly.graph_objects as go
 
 
 def data_gen(dataset):
@@ -143,3 +146,108 @@ if __name__ == '__main__':
     min_sup *= len(dataset)
     scan1, scan2, scan3 = apriori(dataset, min_sup)
 
+
+    ## project - frequent itemsets
+    dataset = pd.read_csv('data/integrated_data.csv', index_col=0, header=0).astype('string')
+    dataset_prep = dataset[['prep']].dropna()
+
+    # get all countries with frequent-set 1
+    dataset_country = dataset[['Residency','prep']].dropna()
+    countries = ['US', 'AU', 'DE', 'ES', 'IT', 'JP', 'KR', 'MX', 'SE', 'UK']
+    df_countries = []
+    minsup_countries = []
+    scans1_countries = []
+    scans2_countries = []
+    scans3_countries = []
+    gobars = []
+    for ii, country in enumerate(countries):
+        df_country = dataset_country[dataset_country['Residency'] == country]
+        minsup_country = 0.10 * len(df_country)
+        df_country = df_country.drop('Residency', axis=1)
+        scans1_country, _, _ = \
+            apriori(df_country, minsup_country)
+        scans1_country = {key:value/len(df_country) for (key, value) in scans1_country.items()}
+        gobars.append(go.Bar(name=country, x=list(scans1_country.keys()), y=list(scans1_country.values()), base=0))
+    fig = go.Figure(data=gobars[:])
+    # Change the bar mode
+    fig.update_layout(barmode='relative')
+    update_traces = dict(marker_line_width=1.5, opacity=0.9)
+    fig.update_traces(update_traces)
+    fig.write_image("outputs/plots/support_countries.pdf")
+
+    # get global frequentset-1
+    min_sup = 0.10
+    min_sup *= len(dataset_prep)
+    print(min_sup)
+    scan1, scan2, scan3 = apriori(dataset_prep, min_sup)
+    # print('frequent-1 itemset:', scan1)
+    # print('frequent-2 itemset:', scan2)
+    # print('frequent-3 itemset:', scan3)
+    # CN had some erroneous data for PREP
+
+    dfprep = pd.read_csv('data/metadata.csv', index_col=0, 
+                         header=None, usecols=range(1,4), encoding='latin1')
+
+    prep_dict = {}
+    for val in dfprep.loc['prep', 3].strip().split(','):
+        val = val.split('=')
+        prep_dict[val[0].strip()] = val[1].strip()
+    
+    dfprep_desc = pd.DataFrame.from_dict(prep_dict, orient='index', columns=['Description'])
+    table = go.Figure(data=[go.Table(
+                            columnwidth=[1, 4],
+                            header=dict(values=['Activity', 'Description']),
+                            cells=dict(values=[list(prep_dict.keys()),
+                                               list(prep_dict.values())]))])
+    # print(prep_dict)
+
+    # # to use activity description instead
+    # prep_merged = {value:scan1[key] for (key, value) in prep_dict.items()}
+    # prep_merged = {key:value/len(dataset_prep) for (key, value) in prep_merged.items()}
+    # # print(prep_merged)
+
+    update_layout = dict(barmode='group', title='Support of Preparation Activities',
+                        yaxis=dict( titlefont_size=16, tickfont_size=16, range=[0.1, 1]),
+                        xaxis=dict( tickangle=-45, titlefont_size=16, tickfont_size=16))
+    update_traces = dict(marker_color='rgb(55, 83, 109)', marker_line_color='rgb(8,48,107)',
+                    marker_line_width=1.5, opacity=0.7)
+
+    prep_merged = {key:value/len(dataset_prep) for (key, value) in scan1.items()}
+
+    prep_merged = pd.DataFrame.from_dict(prep_merged, orient='index', columns=['support'])
+    # print(prep_merged)
+    fig = px.bar(prep_merged, x=prep_merged.index, y='support', color='support',
+                 labels={'index': 'activities'})
+    fig.update_traces(update_traces)
+    fig.update_layout(update_layout)
+    fig.write_image("outputs/plots/frequent_itemset1.pdf")
+    # fig.update_xaxes(title_font=dict(size=18, family='Courier', color='crimson'))
+    # fig.update_yaxes(title_font=dict(size=18, family='Courier', color='crimson'))
+
+    # increase support and view higher frequentsets (2 and 3)
+    update_layout = dict(barmode='relative',
+                        yaxis=dict(titlefont_size=16, tickfont_size=16, range=[0.4, 0.65]),
+                        xaxis=dict(tickangle=-45, titlefont_size=16, tickfont_size=16))
+    min_sup = 0.40
+    min_sup *= len(dataset_prep)
+    print(min_sup)
+    scan1, scan2, scan3 = apriori(dataset_prep, min_sup)
+    # print('frequent-1 itemset:', scan1)
+    # print('frequent-2 itemset:', scan2)
+    # print('frequent-3 itemset:', scan3)
+    prep2 =  {key:value/len(dataset_prep) for (key, value) in scan2.items()}
+    prep2_supp = pd.DataFrame.from_dict(prep2, orient='index', columns=['support'])
+    fig = px.bar(prep2_supp, x=prep2_supp.index, y='support', color='support',
+                 labels={'index': 'activities'})
+    fig.update_traces(update_traces)
+    fig.update_layout(update_layout)
+    fig.update_layout(title='Support of Preparation Activities - frequentset-2')
+    fig.write_image("outputs/plots/frequent_itemset2.pdf")
+
+    prep3 =  {key:value/len(dataset_prep) for (key, value) in scan3.items()}
+    prep3_supp = pd.DataFrame.from_dict(prep3, orient='index', columns=['support'])
+    fig = px.bar(prep3_supp, x=prep3_supp.index, y='support')
+    fig.update_traces(update_traces)
+    fig.update_layout(update_layout)
+    fig.update_layout(title='Support of Preparation Activities - frequentset-3')
+    fig.write_image("outputs/plots/frequent_itemset3.pdf")
