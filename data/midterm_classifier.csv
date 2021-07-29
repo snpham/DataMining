@@ -1,0 +1,4 @@
+actual_class/predicted_class,subscribes=yes,subscribes=no,total
+subscribes=yes,205,71,276
+subscribes=no,123,5614,5737
+total,328,5685,6013

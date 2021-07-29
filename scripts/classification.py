@@ -53,6 +53,18 @@ def naive_bayesian(df=None, label_dict=None, class_label=None, single=False):
     return len_i
 
 
+def accuracy(df):
+    return (df.iloc[0,0]+df.iloc[1,1]) / (df.iloc[2,2])
+
+
+def precision(df):
+    return df.iloc[0,0] / (df.iloc[0,0] + df.iloc[1,0])
+
+
+def recall(df):
+    return df.iloc[0,0] / (df.iloc[0,0] + df.iloc[0,1])
+
+
 if __name__ == '__main__':
 
 
@@ -186,4 +198,52 @@ if __name__ == '__main__':
 
 
 
+    data = pd.read_csv('data/classifier_ex.csv', skipinitialspace=True, index_col=0)
+    acc = accuracy(data)
+    prec = precision(data)
+    rec = recall(data)
+    # print(acc, prec, rec)
 
+
+    ## PRECISION, ACCURACY, RECALL
+    data2 = pd.read_csv('data/midterm_classifier.csv', skipinitialspace=True, index_col=0)
+    acc = accuracy(data2)
+    prec = precision(data2)
+    rec = recall(data2)
+    # print(acc*100, prec*100, rec*100)
+
+
+
+
+
+
+
+
+    ## INFO GAIN, BAYESIAN
+    data = pd.read_csv('data/midterm_info.csv', skipinitialspace=True)
+
+    # info D
+    Dy = len(data[data['bigtip'] == 'yes'])
+    Dn = len(data[data['bigtip'] == 'no'])
+    Dtot = Dy + Dn
+    infoD =  entropy(p_list=[Dy/Dtot, Dn/Dtot])
+
+    # info food
+    foodset1 = data[data['food'] == 'good']
+    foodset1yes = foodset1[foodset1['bigtip'] == 'yes' ]
+    foodset2 = data[data['food'] =='mediocre']
+    foodset2yes = foodset2[foodset2['bigtip'] == 'yes' ]
+    foodset3 = data[data['food'] =='yikes']
+    foodset3yes = foodset3[foodset3['bigtip'] == 'yes' ]
+    lens_food = [len(foodset1), len(foodset2), len(foodset3)]
+    lens_foody = [len(foodset1yes), len(foodset2yes), len(foodset3yes)]
+    info_food = info_subset(lens1=lens_food, lens2=lens_foody)
+    gain_food = info_D - info_food
+    print(gain_food)
+
+
+
+    X_yes = {'food': 'good', 'speedy': 'yes', 'price': 'high'}
+    class_label = {'bigtip': 'yes'}
+    PX_yes = naive_bayesian(df=data, label_dict=X_yes, class_label=class_label)
+    print(PX_yes)

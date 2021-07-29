@@ -217,3 +217,18 @@ if __name__ == '__main__':
     chi2, dof = chi_squared(df_sup)
     assert np.allclose(chi2, 277.78, rtol=1e-2) # corr. since > 10.828
     
+
+    ## LIFT AND CHI2
+    df_sup = pd.DataFrame(index=['bread', 'Notbread'], 
+                        columns=['orange', 'Notorange'])
+    df_sup.loc['bread', 'orange'] = 900
+    df_sup.loc['Notbread', 'orange'] = 450
+    df_sup.loc['bread', 'Notorange'] = 750
+    df_sup.loc['Notbread', 'Notorange'] = 900
+    # bread -> orange
+    lft = lift(df_sup.copy(), 'bread', 'orange')
+    # lft = lift(df_sup.copy(), 'orange', 'Notbread')
+    chi2, dof = chi_squared(df_sup)
+    print(lft, chi2)
+    
+    

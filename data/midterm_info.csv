@@ -1,0 +1,11 @@
+id,food,speedy,price,bigtip
+1,good,yes,average,yes
+2,good,no,high,no
+3,good,yes,high,yes
+4,good,no,average,yes
+5,mediocre,yes,average,no
+6,yikes,yes,average,no
+7,good,yes,average,yes
+8,good,yes,high,yes
+9,mediocre,yes,average,no
+10,good,yes,average,yes

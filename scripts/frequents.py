@@ -46,7 +46,7 @@ def apriori(dataset, min_sup):
     for data in data_gen(dataset):
         for item in data:
             freq1_items.add(item)
-    print('itemset:', freq1_items)
+    # print('itemset:', freq1_items)
 
     scan1 = dict.fromkeys(freq1_items, 0)
     for data in data_gen(dataset):
@@ -80,9 +80,9 @@ def apriori(dataset, min_sup):
     scan3 = threshold(scan3, min_sup)
     scan3 = dict(sorted(scan3.items()))
 
-    print('frequent-1 itemset:', scan1)
-    print('frequent-2 itemset:', scan2)
-    print('frequent-3 itemset:', scan3)
+    # print('frequent-1 itemset:', scan1)
+    # print('frequent-2 itemset:', scan2)
+    # print('frequent-3 itemset:', scan3)
     
     return scan1, scan2, scan3
 
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     for sets in tofind:
         assoc_str, supp, conf = apriori_assoc(df=dataset, datadict1=scan2, 
                                             datadict2=scan3, label=sets)
-        print(assoc_str, 'support:', supp, 'confidence:', conf)
+        # print(assoc_str, 'support:', supp, 'confidence:', conf)
         # ['bread', 'milk'] -> pie support: 0.75 confidence: 0.75
         # ['milk', 'pie'] -> bread support: 0.75 confidence: 1.0
         # ['bread', 'pie'] -> milk support: 0.75 confidence: 1.0
@@ -138,3 +138,8 @@ if __name__ == '__main__':
     # frequent-2 itemset: {'I1,I2': 4, 'I1,I3': 4, 'I1,I5': 2, 'I2,I3': 4, 'I2,I4': 2, 'I2,I5': 2}
     # frequent-3 itemset: {'I2,I3,I1': 2, 'I2,I5,I1': 2}
     
+    dataset = pd.read_csv('data/midterm_frequent.csv', index_col=0, header=0)
+    min_sup = 0.50
+    min_sup *= len(dataset)
+    scan1, scan2, scan3 = apriori(dataset, min_sup)
+
