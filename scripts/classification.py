@@ -11,15 +11,31 @@ def entropy(p_list):
     return sum(-p_i*np.log(p_i)/np.log(2) for p_i in p_list)
 
 
-def entropy_split(p_list, attribute):
-    """
-    """
-    pass
+def info_D(df_data, classlabel):
+
+    key = list(classlabel.keys())[0]
+    labels = list(classlabel.values())[0]
+
+    if len(labels) == 2:
+        print('binary')
+        D1 = len(df_data[df_data[key] == labels[0]])
+        D2 = len(df_data[df_data[key] == labels[1]])
+        Dtot = sum((D1, D2))
+    elif len(labels) > 2:
+        print('continuous trees not implemented')
+
+    return entropy(p_list=[D1/Dtot, D2/Dtot])
 
 
 def info_subset(lens1, lens2):
+    """get info if class C_i in a data partition; same as info_Ci_D
+    but uses lengths of tuples in class D and C_i_D
+    :param lens1: list of tuple counts in different classes in D
+    :param lens2: list of tuple counts matching the class label
+    in work
     """
-    """
+    Dtot = sum((lens1))
+
     info_i = 0
     for set1, set1y in zip(lens1,lens2):
         leny = set1y
@@ -28,6 +44,44 @@ def info_subset(lens1, lens2):
             entropy(p_list=[leny/(leny+lenn), lenn/(leny+lenn)])
 
     return info_i
+
+
+def info_gain(info_D, info_Ci_D):
+    """information gain is defined as the difference between the
+    original information requirement (based on just the proportion
+    of classes) and the new requirement (obtained after partitioning
+    of i)
+    """
+    return info_D - info_Ci_D
+
+
+def info_Ci_D(df_data, setlabels, classlabel):
+    """find the information gain of a partition i from a dictionary of
+    class labels
+    """
+    df_lists = []
+    df_classes = []
+    df_count = []
+    df_classcount = []
+    for v in list(setlabels.values())[0]:
+        print(v)
+        df = df_data[df_data[list(setlabels.keys())[0]] == v]
+        df_class = df[df[list(classlabel.keys())[0]] == list(classlabel.values())[0]]
+        df_lists.append(df)
+        df_classes.append(df_class)
+        df_count.append(len(df))
+        df_classcount.append(len(df_class))
+        # print(data[data[list(setlabels.keys())[0]] == v])
+    print(df_count, df_classcount)
+    info_age = info_subset(lens1=df_count, lens2=df_classcount)
+
+    return info_age
+
+
+def get_info_gain(df, setlabels, classlabel, info_D):
+    info_i = info_Ci_D(df, setlabels, classlabel)
+    gain_i = info_gain(info_D, info_i)
+    return gain_i
 
 
 def split_info(p_list, Dtot):
@@ -68,24 +122,32 @@ def recall(df):
 if __name__ == '__main__':
 
 
-    # example 8b - entropy
+    # example 8b - using entropy
     D_total = 30
     p_list = [16/D_total, 14/D_total]
-    info_D = entropy(p_list=p_list)
-    assert np.allclose(info_D, 0.99, rtol=1e-2)
+    infoD = entropy(p_list=p_list)
+    assert np.allclose(infoD, 0.99, rtol=1e-2)
 
-    # example 8b - info gain
+    # example 8b - using entropy and finding info gain manually
     class1 = 9
     class2 = 5
     D_total = sum((class1, class2))
     p_list = [class1/D_total, class2/D_total]
-    info_D = entropy(p_list=p_list)
-    assert np.allclose(info_D, 0.940, rtol=1e-2)
-
-    info_age = 5/14*entropy([2/5,3/5]) + 4/14*entropy([4/4,0/4]) + 5/14*entropy([3/5,2/5])
+    infoD = entropy(p_list=p_list)
+    info_age = 5/14*entropy([2/5,3/5]) + 4/14*entropy([4/4,0/4]) \
+             + 5/14*entropy([3/5,2/5])
+    gain_age = infoD - info_age
+    assert np.allclose(infoD, 0.940, rtol=1e-2)
     assert np.allclose(info_age, 0.694, rtol=1e-2)
-    gain_age = info_D - info_age
     assert np.allclose(gain_age, 0.246, rtol=1e-2)
+    # example 8b using gain functions
+    info_age2 = info_subset(lens1=[5,4,5], lens2=[2,4,3])
+    gain_age2 = info_gain(infoD, info_age)
+    assert np.allclose([info_age, gain_age], [info_age2, gain_age2])
+
+    exit()
+
+
 
     data = pd.read_csv('data/decisiontree_ex.csv', skipinitialspace=True)
 
@@ -93,20 +155,45 @@ if __name__ == '__main__':
     Dy = len(data[data['buys_computer'] == 'yes'])
     Dn = len(data[data['buys_computer'] == 'no'])
     Dtot = Dy + Dn
+    print(Dy, Dn, Dtot)
     infoD =  entropy(p_list=[Dy/Dtot, Dn/Dtot])
     assert np.allclose(infoD, 0.940, rtol=1e-2)
 
+    classlabel = {'buys_computer': ('yes', 'no')}
+    infoD = info_D(df_data=data, classlabel=classlabel)
+    print(infoD)
+    # assert np.allclose(infoD, 0.940, rtol=1e-2)
+
     # info age
-    ageset1 = data[data['age'] == '<=30']
-    ageset1yes = ageset1[ageset1['buys_computer'] == 'yes' ]
-    ageset2 = data[data['age'] =='31-40']
-    ageset2yes = ageset2[ageset2['buys_computer'] == 'yes' ]
-    ageset3 = data[data['age'] =='>40']
-    ageset3yes = ageset3[ageset3['buys_computer'] == 'yes' ]
-    lens_age = [len(ageset1), len(ageset2), len(ageset3)]
-    lens_agey = [len(ageset1yes), len(ageset2yes), len(ageset3yes)]
-    info_age = info_subset(lens1=lens_age, lens2=lens_agey)
-    gain_age = info_D - info_age
+    agesets = {'age': ('<=30', '31-40', '>40')}
+    agesetclass = {'buys_computer': 'yes'}
+    info_age = info_Ci_D(df_data=data, setlabels=agesets, classlabel=agesetclass)
+    gain_age = info_gain(infoD, info_age)
+    assert np.allclose(gain_age, 0.246, rtol=1e-2)
+    gain_age = get_info_gain(df=data, setlabels=agesets, classlabel=agesetclass, 
+                             info_D=infoD)
+    assert np.allclose(gain_age, 0.246, rtol=1e-2)
+
+
+
+    exit()
+    print(df_classes)
+    print(df_count, df_classcount)
+
+    # ageset1 = data[data['age'] == '<=30']
+    # ageset1yes = ageset1[ageset1['buys_computer'] == 'yes' ]
+    # ageset2 = data[data['age'] =='31-40']
+    # ageset2yes = ageset2[ageset2['buys_computer'] == 'yes' ]
+    # ageset3 = data[data['age'] =='>40']
+    # ageset3yes = ageset3[ageset3['buys_computer'] == 'yes' ]
+    # lens_age = [len(ageset1), len(ageset2), len(ageset3)]
+    # lens_agey = [len(ageset1yes), len(ageset2yes), len(ageset3yes)]
+    # print(lens_age, lens_agey)
+    # info_age = info_subset(lens1=lens_age, lens2=lens_agey)
+    # gain_age = info_D - info_age
+    # assert np.allclose(gain_age, 0.246, rtol=1e-2)
+
+    exit()
 
     # info income
     incomeset1 = data[data['income'] == 'high']
@@ -119,6 +206,7 @@ if __name__ == '__main__':
     lens_incomey = [len(incomeset1yes), len(incomeset2yes), len(incomeset3yes)]
     info_income = info_subset(lens1=lens_income, lens2=lens_incomey)
     gain_income = info_D - info_income
+    assert np.allclose(gain_income, 0.029, rtol=1e-2)
 
     # info student
     studentset1 = data[data['student'] == 'yes']
@@ -129,6 +217,7 @@ if __name__ == '__main__':
     lens_studenty = [len(studentset1yes), len(studentset2yes)]
     info_student = info_subset(lens1=lens_student, lens2=lens_studenty)
     gain_student = info_D - info_student
+    assert np.allclose(gain_student, 0.151, rtol=1e-2)
 
     # info credit_rating
     credit_ratingset1 = data[data['credit_rating'] == 'excellent']
@@ -139,11 +228,11 @@ if __name__ == '__main__':
     lens_credit_ratingy = [len(credit_ratingset1yes), len(credit_ratingset2yes)]
     info_credit_rating = info_subset(lens1=lens_credit_rating, lens2=lens_credit_ratingy)
     gain_credit_rating = info_D - info_credit_rating
+    assert np.allclose(gain_student, 0.048, rtol=1e-2)
 
-    assert np.allclose(gain_age, 0.246, rtol=1e-2)
-    assert np.allclose(gain_income, 0.029, rtol=1e-2)
-    assert np.allclose(gain_student, 0.151, rtol=1e-2)
-    assert np.allclose(gain_credit_rating, 0.048, rtol=1e-2)
+
+
+
 
     split_income = split_info(p_list=[len(incomeset1), len(incomeset2), len(incomeset3)], 
                               Dtot=Dtot)
@@ -239,11 +328,11 @@ if __name__ == '__main__':
     lens_foody = [len(foodset1yes), len(foodset2yes), len(foodset3yes)]
     info_food = info_subset(lens1=lens_food, lens2=lens_foody)
     gain_food = info_D - info_food
-    print(gain_food)
+    # print(gain_food)
 
 
 
     X_yes = {'food': 'good', 'speedy': 'yes', 'price': 'high'}
     class_label = {'bigtip': 'yes'}
     PX_yes = naive_bayesian(df=data, label_dict=X_yes, class_label=class_label)
-    print(PX_yes)
+    # print(PX_yes)

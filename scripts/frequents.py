@@ -147,6 +147,16 @@ if __name__ == '__main__':
     scan1, scan2, scan3 = apriori(dataset, min_sup)
 
 
+
+
+
+
+
+
+
+
+
+
     ## project - frequent itemsets
     dataset = pd.read_csv('data/integrated_data.csv', index_col=0, header=0).astype('string')
     dataset_prep = dataset[['prep']].dropna()
@@ -170,10 +180,39 @@ if __name__ == '__main__':
         gobars.append(go.Bar(name=country, x=list(scans1_country.keys()), y=list(scans1_country.values()), base=0))
     fig = go.Figure(data=gobars[:])
     # Change the bar mode
-    fig.update_layout(barmode='relative')
-    update_traces = dict(marker_line_width=1.5, opacity=0.9)
-    fig.update_traces(update_traces)
+    fig.update_layout(barmode='relative', xaxis=dict(
+        title='activities',titlefont_size=16,tickfont_size=14),yaxis=dict(
+        title='support',titlefont_size=16,tickfont_size=14))
+    # fig.update_traces(update_traces)
     fig.write_image("outputs/plots/support_countries.pdf")
+    # fig.show()
+
+
+    # get all countries with frequent-set 1
+    dataset_country = dataset[['Residency','prep']].dropna()
+    countries = ['US', 'AU', 'DE', 'ES', 'IT', 'JP', 'KR', 'MX', 'SE', 'UK']
+    df_countries = []
+    minsup_countries = []
+    scans1_countries = []
+    scans2_countries = []
+    scans3_countries = []
+    gobars = []
+    for ii, country in enumerate(countries):
+        df_country = dataset_country[dataset_country['Residency'] == country]
+        minsup_country = 0.10 * len(df_country)
+        df_country = df_country.drop('Residency', axis=1)
+        scans1_country, _, _ = \
+            apriori(df_country, minsup_country)
+        scans1_country = {key:value/len(df_country) for (key, value) in scans1_country.items()}
+        gobars.append(go.Bar(name=country, x=list(scans1_country.keys()), y=list(scans1_country.values()), base=0))
+    fig = go.Figure(data=gobars[:])
+    # Change the bar mode
+    fig.update_layout(barmode='relative', xaxis=dict(
+        title='activities',titlefont_size=16,tickfont_size=14),yaxis=dict(
+        title='support',titlefont_size=16,tickfont_size=14))
+    # fig.update_traces(update_traces)
+    fig.write_image("outputs/plots/support_countries2.pdf")
+    # fig.show()
 
     # get global frequentset-1
     min_sup = 0.10
@@ -199,6 +238,8 @@ if __name__ == '__main__':
                             header=dict(values=['Activity', 'Description']),
                             cells=dict(values=[list(prep_dict.keys()),
                                                list(prep_dict.values())]))])
+    table.write_image("outputs/plots/table.pdf")
+    # table.show()
     # print(prep_dict)
 
     # # to use activity description instead
@@ -221,6 +262,8 @@ if __name__ == '__main__':
     fig.update_traces(update_traces)
     fig.update_layout(update_layout)
     fig.write_image("outputs/plots/frequent_itemset1.pdf")
+    # fig.show()
+
     # fig.update_xaxes(title_font=dict(size=18, family='Courier', color='crimson'))
     # fig.update_yaxes(title_font=dict(size=18, family='Courier', color='crimson'))
 
@@ -243,6 +286,8 @@ if __name__ == '__main__':
     fig.update_layout(update_layout)
     fig.update_layout(title='Support of Preparation Activities - frequentset-2')
     fig.write_image("outputs/plots/frequent_itemset2.pdf")
+    # fig.show()
+
 
     prep3 =  {key:value/len(dataset_prep) for (key, value) in scan3.items()}
     prep3_supp = pd.DataFrame.from_dict(prep3, orient='index', columns=['support'])
@@ -251,3 +296,4 @@ if __name__ == '__main__':
     fig.update_layout(update_layout)
     fig.update_layout(title='Support of Preparation Activities - frequentset-3')
     fig.write_image("outputs/plots/frequent_itemset3.pdf")
+    # fig.show()

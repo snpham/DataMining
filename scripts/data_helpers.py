@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
-
-
+import matplotlib.pyplot as plt
+plt.style.use('seaborn')
+import plotly.express as px
 
 
 
@@ -127,3 +128,59 @@ if __name__ == '__main__':
     ret = mode(datalist)
     print(ret)
 
+    num1 = pd.DataFrame()
+    dataset = pd.read_csv('data/integrated_data.csv', index_col=0, header=0)
+    numcols = ['Num1','Num2a','Num2b','Num3']
+    dataset = dataset[np.hstack(['Residency', numcols])]
+    dataset2 = dataset[np.hstack(['Residency', numcols])].copy()
+
+
+    for num in numcols:
+        old_min = dataset[num].min()
+        old_max = dataset[num].max()
+        if num == 'Num1':
+            new_min = 0
+            new_max = 1
+        if num == 'Num2a':
+            new_min = 0
+            new_max = 5
+        if num == 'Num2b':
+            new_min = 0
+            new_max = 1
+        if num == 'Num3':
+            new_min = 0
+            new_max = 1
+        for row in range(0, len(dataset[num])):
+            val = dataset[num].iloc[row]
+            if val is not None:
+                newval = min_max_normalization(old_min=old_min, old_max=old_max, 
+                                    new_min=new_min, new_max=new_max, single_val=val)
+                if num == 'Num2b':
+                    correct = min_max_normalization(old_min=old_min, old_max=old_max, 
+                                    new_min=new_min, new_max=new_max, single_val=20)
+            dataset[num].iloc[row] = newval 
+
+    # update_layout = dict(barmode='relative',
+    #                     yaxis=dict(titlefont_size=16, tickfont_size=16,
+    #                     xaxis=dict(tickangle=-45, titlefont_size=16, tickfont_size=16)))
+
+    fig = px.box(dataset, x="Residency", y="Num1", notched=True, points='all')
+    fig.add_shape(type='line', x0='AU',y0=0.25,x1='US',y1=0.25,
+                    line=dict(color='Red',), xref='x', yref='y')
+    fig.write_image("outputs/plots/num1_stats.pdf")
+    # fig.show()
+    fig = px.box(dataset, x="Residency", y="Num2a", notched=True, points='all')
+    fig.add_shape(type='line', x0='AU',y0=3,x1='US',y1=3,
+                    line=dict(color='Red',), xref='x', yref='y')
+    fig.write_image("outputs/plots/num2a_stats.pdf")
+    # fig.show()
+    fig = px.box(dataset, x="Residency", y="Num2b", notched=True, points='all')
+    fig.add_shape(type='line', x0='AU',y0=0.285714,x1='US',y1=0.285714,
+                    line=dict(color='Red',), xref='x', yref='y')
+    fig.write_image("outputs/plots/num2b_stats.pdf")
+    # fig.show()
+    fig = px.box(dataset, x="Residency", y="Num3", notched=True, points='all')
+    fig.add_shape(type='line', x0='AU',y0=0.5,x1='US',y1=0.5,
+                    line=dict(color='Red',), xref='x', yref='y')
+    fig.write_image("outputs/plots/num3_stats.pdf")
+    # fig.show()
