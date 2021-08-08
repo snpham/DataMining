@@ -94,6 +94,19 @@ def split_info(p_list, Dtot):
     return sum(-p_i/Dtot*np.log(p_i/Dtot)/np.log(2) for p_i in p_list)
 
 
+def gain_ratio(df_data, setlabels, gain):
+    """find the information gain of a partition i from a dictionary of
+    class labels
+    """
+    df_count = []
+    for v in list(setlabels.values())[0]:
+        df = df_data[df_data[list(setlabels.keys())[0]] == v]
+        df_count.append(len(df))
+    split = split_info(p_list=df_count, Dtot=sum(df_count))
+
+    return gain/split
+
+
 def naive_bayesian(df=None, label_dict=None, class_label=None, single=False):
     """
     """
@@ -265,14 +278,24 @@ if __name__ == '__main__':
                              allclasslabels=classlabels_ex9)
     assert np.allclose(gain_credit_ex9b, gain_credit_ex9, rtol=1e-2)
 
+
+    # ex-10: gain ratio for attribute selection
+    lens_incomes_ex10 = lens_income_ex4
+    split_income_ex10 = split_info(p_list=lens_incomes_ex10, Dtot=D_total_ex1)
+    assert np.allclose(split_income_ex10, 1.556, rtol=1e-2)
+    gain_ratio_income_ex10 = gain_income_ex5b/split_income_ex10
+    print(gain_ratio_income_ex10)
+    assert np.allclose(gain_ratio_income_ex10, 0.0187, rtol=1e-2)
+
+
+    income_ex5 = {'income': ('high', 'medium', 'low')}
+    gain_ratio_income = gain_ratio(df_data=data_ex, setlabels=income_ex5, gain=gain_income_ex5b)
+    print(gain_ratio_income)
+
+
     exit()
 
 
-    split_income = split_info(p_list=[len(incomeset1), len(incomeset2), len(incomeset3)], 
-                              Dtot=Dtot)
-    assert np.allclose(split_income, 1.556, rtol=1e-2)
-    gain_ratio_income = gain_income/split_income
-    assert np.allclose(gain_ratio_income, 0.0187, rtol=1e-2)
 
     # example 8c - naive bayesian
     data = pd.read_csv('data/decisiontree_ex.csv', skipinitialspace=True)
