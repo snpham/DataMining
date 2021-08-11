@@ -1,0 +1,95 @@
+0,index,2
+2,DemGen,"1 = female, 2 = male, 3 = other, 4 = prefer not to say"
+3,quota_age,"1 = 18-24, 2 = 25-34, 3 = 35-44, 4 = 45-54, 5 = 55-64, 6 = 65+"
+4,Residency,None
+5,GenSocTrust,1 = Can't be too careful to 7 = Most people can be trusted
+6,Trustingroups_1,1 = Cannot be trusted at all to 5 = Can be trusted a lot
+7,Trustingroups_2,1 = Cannot be trusted at all to 5 = Can be trusted a lot
+8,Trustingroups_3,1 = Cannot be trusted at all to 5 = Can be trusted a lot
+9,Trustingroups_4,1 = Cannot be trusted at all to 5 = Can be trusted a lot
+10,Trustingroups_5,1 = Cannot be trusted at all to 5 = Can be trusted a lot
+11,Trustingroups_6,1 = Cannot be trusted at all to 5 = Can be trusted a lot
+12,Trustingroups_7,1 = Cannot be trusted at all to 5 = Can be trusted a lot
+13,Trustingroups_8,1 = Cannot be trusted at all to 5 = Can be trusted a lot
+14,Trustingroups_9,1 = Cannot be trusted at all to 5 = Can be trusted a lot
+15,Trustingroups_10,1 = Cannot be trusted at all to 5 = Can be trusted a lot
+16,Trustingroups_11,1 = Cannot be trusted at all to 5 = Can be trusted a lot
+17,Trustingroups_12,1 = Cannot be trusted at all to 5 = Can be trusted a lot
+18,Trustingroups_13,1 = Cannot be trusted at all to 5 = Can be trusted a lot
+19,COVIDexp,"9 = unsure, 8 = no, 3 = I think I might have had it but am recovered, 2 = I think I might have it now but not tested, 1 = doctor suspected but tested negative, 4 = doctor suspected but no test yet, 5 = doctor confirmed and am still infected, 6 = doctor confirmed but now test negative, 7 = doctor confirmed but not been tested again"
+20,COVIDeffect_1,1 = not at all affected to 7 = very much affected
+21,COVIDeffect_2,1 = not at all affected to 7 = very much affected
+22,COVIDeffect_3,1 = not at all affected to 7 = very much affected
+23,COVIDeffect_4,1 = not at all affected to 7 = very much affected
+24,SARS,"1 = Yes, 2 = No"
+25,CultCog_1,1 = strongly disagree - 6 = Strongly agree
+26,CultCog_2,1 = strongly disagree - 6 = Strongly agree
+27,CultCog_3,1 = strongly disagree - 6 = Strongly agree
+28,CultCog_4,1 = strongly disagree - 6 = Strongly agree
+29,CultCog_5,1 = strongly disagree - 6 = Strongly agree
+30,CultCog_6,1 = strongly disagree - 6 = Strongly agree
+31,prosocial,"1 = not at all, 7 = very much so"
+32,CanadaQ_1,"1 = strongly disagree, 5 = strongly agree"
+33,CanadaQ_2,"1 = strongly disagree, 5 = strongly agree"
+34,CanadaQ_3,"1 = strongly disagree, 5 = strongly agree"
+35,FinitePool_1,"1 = not at all worried, 7 = very worried"
+36,FinitePool_2,"1 = not at all worried, 7 = very worried"
+37,FinitePool_3,"1 = not at all worried, 7 = very worried"
+38,FinitePool_4,"1 = not at all worried, 7 = very worried"
+39,FinitePool_5,"1 = not at all worried, 7 = very worried"
+40,FinitePool_6,"1 = not at all worried, 7 = very worried"
+41,FinitePool_7,"1 = not at all worried, 7 = very worried"
+42,FinitePool_8,"1 = not at all worried, 7 = very worried"
+43,Longitude_1,"1 = not at all worried, 7 = very worried"
+44,Longitude_2,"1 = not at all worried, 7 = very worried"
+45,Longitude_3,"1 = not at all worried, 7 = very worried"
+46,Personal_1,"1= not at all likely, 7 = very likely"
+47,Personal_2,"1= not at all likely, 7 = very likely"
+48,Personal_3,"1= not at all likely, 7 = very likely"
+49,Personal_4,"1= not at all likely, 7 = very likely"
+50,Personal_5,"1= not at all likely, 7 = very likely"
+51,Personal_6,"1= not at all likely, 7 = very likely"
+52,Personal_7,"1= not at all likely, 7 = very likely"
+53,Personal_8,"1= not at all likely, 7 = very likely"
+54,Friends_1,"1= not at all likely, 7 = very likely"
+55,Friends_2,"1= not at all likely, 7 = very likely"
+56,Friends_3,"1= not at all likely, 7 = very likely"
+57,Friends_4,"1= not at all likely, 7 = very likely"
+58,Friends_5,"1= not at all likely, 7 = very likely"
+59,Friends_6,"1= not at all likely, 7 = very likely"
+60,Friends_7,"1= not at all likely, 7 = very likely"
+61,Friends_8,"1= not at all likely, 7 = very likely"
+62,MediaExp_1,"1 = yes, 2 = no"
+63,MediaExp_2,"1 = yes, 2 = no"
+64,MediaExp_3,"1 = yes, 2 = no"
+65,MediaExp_4,"1 = yes, 2 = no"
+66,MediaExp_5,"1 = yes, 2 = no"
+67,MediaExp_6,"1 = yes, 2 = no"
+68,MediaExp_7,"1 = yes, 2 = no"
+69,PosterstrustQ1,"1 = didn't trust at all, 7 = completely trusted"
+70,SocialmediatrustQ1,"1 = didn't trust at all, 7 = completely trusted"
+71,journalisttrustQ1,"1 = didn't trust at all, 7 = completely trusted"
+72,govtrustQ1,"1 = didn't trust at all, 7 = completely trusted"
+73,workplacetrustQ1,"1 = didn't trust at all, 7 = completely trusted"
+74,FriendstrustQ1,"1 = didn't trust at all, 7 = completely trusted"
+75,WHOtrustQ1,"1 = didn't trust at all, 7 = completely trusted"
+76,Soughtinfo,"1 = Yes, 2 = No"
+78,Govresponse_1,"1 = not at all, 7 = very much"
+79,Govresponse_2,"1 = not at all, 7 = very much"
+80,Govresponse_3,"1 = not at all, 7 = very much"
+81,Govresponse_4,"1 = not at all, 7 = very much"
+82,Govresponse_5,"1 = not at all, 7 = very much"
+83,Govresponse_6,"1 = not at all, 7 = very much"
+84,Govresponse_7,"1 = not at all, 7 = very much"
+85,Govresponse_8,"1 = not at all, 7 = very much"
+86,Govresponse_9,"1 = not at all, 7 = very much"
+87,Govrestrict_1,"1 = not firm enough with restrictions on people, 7 = putting too many restrictions on people, 8 = I don't know the response"
+88,Govrestrict_2,"1 = not firm enough with restrictions on people, 7 = putting too many restrictions on people, 8 = I don't know the response"
+89,Govrestrict_3,"1 = not firm enough with restrictions on people, 7 = putting too many restrictions on people, 8 = I don't know the response"
+90,Sciunderstand,"1 = very limited understanding, 7 = very good understanding"
+91,KnowledgeCert_1,"1 = very certain,  7 = very uncertain"
+92,KnowledgeCert_2,"1 = very certain,  7 = very uncertain"
+101,DemEdu,"1 = no formal above 16 to 5 = Masters, 9 = doctorate"
+102,DemHealthcare,"1 = yes, 2 = no"
+103,Ethnic min,"1 = yes, 2 = no, 4 = prefer not to answer"
+104,Politics,1 (very left) to 7 (very right)
