@@ -136,308 +136,17 @@ def recall(df):
     return df.iloc[0,0] / (df.iloc[0,0] + df.iloc[0,1])
 
 
-if __name__ == '__main__':
-
-
-    # # example 8b - using entropy
-    # D_total_8b = 30
-    # p_list_8b = [16/D_total_8b, 14/D_total_8b]
-    # infoD_8b = entropy(p_list=p_list_8b)
-    # assert np.allclose(infoD_8b, 0.99, rtol=1e-2)
-
-    # # example 8b - using entropy and finding info gains manually
-    # class_yes_8b = 9
-    # class_no_8b = 5
-    # D_total_8b = sum((class_yes_8b, class_no_8b))
-    # p_list_8b = [class_yes_8b/D_total_8b, class_no_8b/D_total_8b]
-    # infoD_8b2 = entropy(p_list=p_list_8b)
-    # info_age_8b2 = 5/14*entropy([2/5,3/5]) + 4/14*entropy([4/4,0/4]) \
-    #          + 5/14*entropy([3/5,2/5])
-    # gain_age_8b2 = infoD_8b2 - info_age_8b2
-    # assert np.allclose(infoD_8b2, 0.940, rtol=1e-2)
-    # assert np.allclose(info_age_8b2, 0.694, rtol=1e-2)
-    # assert np.allclose(gain_age_8b2, 0.246, rtol=1e-2)
-
-    # # example 8b - using entropy and finding info gains automatically
-    # info_age_8b3 = info_subset(lens1=[5,4,5], lens2=[2,4,3])
-    # gain_age_8b3 = info_gain(infoD_8b2, info_age_8b3)
-    # assert np.allclose([info_age_8b2, gain_age_8b2], [info_age_8b3, gain_age_8b3])
-
-
-    # ## another decision tree example
-    # data_ex = pd.read_csv('data/decisiontree_ex.csv', skipinitialspace=True)
-
-    # # ex-1: info D for decisiontree_ex.csv example by entropy
-    # D_len1_ex1 = len(data_ex[data_ex['buys_computer'] == 'yes'])
-    # D_len2_ex1 = len(data_ex[data_ex['buys_computer'] == 'no'])
-    # D_total_ex1 = sum((D_len1_ex1, D_len2_ex1))
-    # infoD_ex1a =  entropy(p_list=[D_len1_ex1/D_total_ex1, D_len2_ex1/D_total_ex1])
-    # assert np.allclose(infoD_ex1a, 0.940, rtol=1e-2)
-    # # info D by dictionary function
-    # classlabels_ex = {'buys_computer': ('yes', 'no')}
-    # infoD_ex1b = info_D(df_data=data_ex, allclasslabels=classlabels_ex)
-    # assert np.allclose(infoD_ex1a, infoD_ex1b, rtol=1e-2)
-
-    # # ex-2: age info and gain using functions
-    # classlabels_ex2 = classlabels_ex
-    # ages_ex2 = {'age': ('<=30', '31-40', '>40')}
-    # ages_class_ex2 = {'buys_computer': 'yes'}
-    # infoD_ex2 = infoD_ex1b
-    # info_ages_ex2 = info_Ci_D(df_data=data_ex, setlabels=ages_ex2, classlabel=ages_class_ex2)
-    # gain_ages_ex2 = info_gain(infoD_ex2, info_ages_ex2)
-    # assert np.allclose(gain_ages_ex2, 0.246, rtol=1e-2)
-    # # testing all-in-one function
-    # gain_ages_ex2b = get_info_gain(df=data_ex, setlabels=ages_ex2, classlabel=ages_class_ex2, 
-    #                          allclasslabels=classlabels_ex2)
-    # assert np.allclose(gain_ages_ex2b, 0.246, rtol=1e-2)
-
-    # # ex-3: age info and gain manually using infoD from above
-    # infoD_ex3 = infoD_ex1b
-    # ageset1_ex3 = data_ex[data_ex['age'] == '<=30']
-    # ageset1_ex3yes = ageset1_ex3[ageset1_ex3['buys_computer'] == 'yes' ]
-    # ageset2_ex3 = data_ex[data_ex['age'] =='31-40']
-    # ageset2_ex3yes = ageset2_ex3[ageset2_ex3['buys_computer'] == 'yes' ]
-    # ageset3_ex3 = data_ex[data_ex['age'] =='>40']
-    # ageset3_ex3yes = ageset3_ex3[ageset3_ex3['buys_computer'] == 'yes' ]
-    # lens_age_ex3 = [len(ageset1_ex3), len(ageset2_ex3), len(ageset3_ex3)]
-    # lens_age_ex3y = [len(ageset1_ex3yes), len(ageset2_ex3yes), len(ageset3_ex3yes)]
-    # info_age_ex3 = info_subset(lens1=lens_age_ex3, lens2=lens_age_ex3y)
-    # gain_age_ex3 = infoD_ex3 - info_age_ex3
-    # assert np.allclose(gain_age_ex3, gain_ages_ex2b, rtol=1e-2)
-
-    # # ex-4: age info and gain manually using infoD from above
-    # infoD_ex4 = infoD_ex1b
-    # income1_ex4 = data_ex[data_ex['income'] == 'high']
-    # income1_ex4yes = income1_ex4[income1_ex4['buys_computer'] == 'yes' ]
-    # income2_ex4 = data_ex[data_ex['income'] =='medium']
-    # income2_ex4yes = income2_ex4[income2_ex4['buys_computer'] == 'yes' ]
-    # income3_ex4 = data_ex[data_ex['income'] =='low']
-    # income3_ex4yes = income3_ex4[income3_ex4['buys_computer'] == 'yes' ]
-    # lens_income_ex4 = [len(income1_ex4), len(income2_ex4), len(income3_ex4)]
-    # lens_income_ex4y = [len(income1_ex4yes), len(income2_ex4yes), len(income3_ex4yes)]
-    # info_income_ex4 = info_subset(lens1=lens_income_ex4, lens2=lens_income_ex4y)
-    # gain_income_ex4 = infoD_ex4 - info_income_ex4
-    # assert np.allclose(gain_income_ex4, 0.029, rtol=1e-2)
-
-    # # ex-5: income info and gain using functions
-    # classlabels_ex5 = classlabels_ex
-    # income_ex5 = {'income': ('high', 'medium', 'low')}
-    # income_class_ex5 = {'buys_computer': 'yes'}
-    # infoD_ex5 = infoD_ex1b
-    # info_income_ex5 = info_Ci_D(df_data=data_ex, setlabels=income_ex5, classlabel=income_class_ex5)
-    # gain_income_ex5 = info_gain(infoD_ex5, info_income_ex5)
-    # assert np.allclose(gain_income_ex5, gain_income_ex4, rtol=1e-2)
-    # # testing all-in-one function
-    # gain_income_ex5b = get_info_gain(df=data_ex, setlabels=income_ex5, classlabel=income_class_ex5, 
-    #                          allclasslabels=classlabels_ex5)
-    # assert np.allclose(gain_income_ex5b, gain_income_ex4, rtol=1e-2)
-
-    # # ex-6: student info and gain manually using infoD from above
-    # student1_ex6 = data_ex[data_ex['student'] == 'yes']
-    # student1_ex6yes = student1_ex6[student1_ex6['buys_computer'] == 'yes' ]
-    # student2_ex6 = data_ex[data_ex['student'] =='no']
-    # student2_ex6yes = student2_ex6[student2_ex6['buys_computer'] == 'yes' ]
-    # lens_student_ex6 = [len(student1_ex6), len(student2_ex6)]
-    # lens_student_ex6y = [len(student1_ex6yes), len(student2_ex6yes)]
-    # info_student_ex6 = info_subset(lens1=lens_student_ex6, lens2=lens_student_ex6y)
-    # gain_student_ex6 = infoD_ex1b - info_student_ex6
-    # assert np.allclose(gain_student_ex6, 0.151, rtol=1e-2)
-
-    # # ex-7: student info and gain using functions
-    # classlabels_ex7 = classlabels_ex
-    # student_ex7 = {'student': ('yes', 'no')}
-    # student_class_ex7 = {'buys_computer': 'yes'}
-    # infoD_ex7 = infoD_ex1b
-    # info_student_ex7 = info_Ci_D(df_data=data_ex, setlabels=student_ex7, classlabel=student_class_ex7)
-    # gain_student_ex7 = info_gain(infoD_ex7, info_student_ex7)
-    # assert np.allclose(gain_student_ex7, gain_student_ex6, rtol=1e-2)
-    # # testing all-in-one function
-    # gain_student_ex7b = get_info_gain(df=data_ex, setlabels=student_ex7, classlabel=student_class_ex7, 
-    #                          allclasslabels=classlabels_ex7)
-    # assert np.allclose(gain_student_ex7b, gain_student_ex7, rtol=1e-2)
-
-    # # ex-8: credit rating info and gain manually using infoD from above
-    # credit1_ex8 = data_ex[data_ex['credit_rating'] == 'excellent']
-    # credit1_ex8yes = credit1_ex8[credit1_ex8['buys_computer'] == 'yes' ]
-    # credit2_ex8 = data_ex[data_ex['credit_rating'] =='fair']
-    # credit2_ex8yes = credit2_ex8[credit2_ex8['buys_computer'] == 'yes' ]
-    # lens_credit_ex8 = [len(credit1_ex8), len(credit2_ex8)]
-    # lens_credit_ex8y = [len(credit1_ex8yes), len(credit2_ex8yes)]
-    # info_credit_ex8 = info_subset(lens1=lens_credit_ex8, lens2=lens_credit_ex8y)
-    # gain_credit_ex8 = infoD_ex1b - info_credit_ex8
-    # assert np.allclose(gain_credit_ex8, 0.048, rtol=1e-2)
-
-    # # ex-9: credit rating info and gain using functions
-    # classlabels_ex9 = classlabels_ex
-    # credit_ex9 = {'credit_rating': ('excellent', 'fair')}
-    # credit_class_ex9 = {'buys_computer': 'yes'}
-    # infoD_ex9 = infoD_ex1b
-    # info_credit_ex9 = info_Ci_D(df_data=data_ex, setlabels=credit_ex9, classlabel=credit_class_ex9)
-    # gain_credit_ex9 = info_gain(infoD_ex9, info_credit_ex9)
-    # assert np.allclose(gain_credit_ex9, gain_credit_ex8, rtol=1e-2)
-    # # testing all-in-one function
-    # gain_credit_ex9b = get_info_gain(df=data_ex, setlabels=credit_ex9, classlabel=credit_class_ex9, 
-    #                          allclasslabels=classlabels_ex9)
-    # assert np.allclose(gain_credit_ex9b, gain_credit_ex9, rtol=1e-2)
-
-
-    # # ex-10: gain ratio for attribute selection
-    # lens_incomes_ex10 = lens_income_ex4
-    # split_income_ex10 = split_info(p_list=lens_incomes_ex10, Dtot=D_total_ex1)
-    # assert np.allclose(split_income_ex10, 1.556, rtol=1e-2)
-    # gain_ratio_income_ex10 = gain_income_ex5b/split_income_ex10
-    # assert np.allclose(gain_ratio_income_ex10, 0.0187, rtol=1e-2)
-
-    # # ex-11: gain ratio for attribute selection
-    # income_ex11 = {'income': ('high', 'medium', 'low')}
-    # gain_ratio_income11 = gain_ratio(df_data=data_ex, setlabels=income_ex11, gain=gain_income_ex5b)
-    # assert np.allclose(gain_ratio_income11, gain_ratio_income_ex10, rtol=1e-2)
-
-
-    # # ex-12 - decision tree worksheet
-    # # print('>> Decision Tree Worksheet')
-    # data_ex12 = pd.read_csv('data/decisiontree_ex.csv', skipinitialspace=True)
-    # allclasslabels_ex12 = {'buys_computer': ('yes', 'no')}
-    # infoD_WS = info_D(df_data=data_ex12, allclasslabels=allclasslabels_ex12)
-    # # print(f'info_D = {infoD_WS:.3f}')
-    # for age in data_ex12['age'].unique():
-    #     total = data_ex12[data_ex12['age'] == age]
-    #     total_yes = total[total['buys_computer'] == 'yes']
-    #     entrop = entropy(p_list= \
-    #         [len(total_yes)/len(total), (len(total)-len(total_yes))/len(total)])
-    #     # print(f'group: {age}: , entropy: {entrop:.3f}')
-    # classlabel_ex12 = {'buys_computer': 'yes'}
-    # setlabels = {'age': data_ex12['age'].unique()}
-    # info_age_ex12 = info_Ci_D(data_ex12, setlabels, classlabel_ex12)
-    # # print(f'info_age: {info_age_ex12:.3f}')
-    # gain_age_ex12 = info_gain(infoD_WS, info_age_ex12)
-    # # print(f'Gain(age): {gain_age_ex12:.3f}')
-    # gain_income_ex12 = get_info_gain(df=data_ex12, 
-    #                                  setlabels={'income': data_ex12['income'].unique()}, 
-    #                                  classlabel={'buys_computer': 'yes'}, 
-    #                                  allclasslabels={'buys_computer': \
-    #                                      data_ex12['buys_computer'].unique()})
-    # # print(f'Gain(income): {gain_income_ex12:.3f}')
-    # gain_student_ex12 = get_info_gain(df=data_ex12, 
-    #                                  setlabels={'student': data_ex12['student'].unique()}, 
-    #                                  classlabel={'buys_computer': 'yes'}, 
-    #                                  allclasslabels={'buys_computer': \
-    #                                      data_ex12['buys_computer'].unique()})
-    # # print(f'Gain(student): {gain_student_ex12:.3f}')
-    # gain_credit_ex12 = get_info_gain(df=data_ex12, 
-    #                                  setlabels={'credit_rating': \
-    #                                      data_ex12['credit_rating'].unique()}, 
-    #                                  classlabel={'buys_computer': 'yes'}, 
-    #                                  allclasslabels={'buys_computer': \
-    #                                      data_ex12['buys_computer'].unique()})
-    # # print(f'Gain(credit): {gain_credit_ex12:.3f}')
-    # assert np.allclose([infoD_WS, gain_age_ex12, gain_income_ex12, 
-    #                         gain_student_ex12, gain_credit_ex12],
-    #                     [0.940, 0.247, 0.029, 0.152, 0.048], rtol=1e-2)
-
-
-    # # example 8c - naive bayesian
-    # data = pd.read_csv('data/decisiontree_ex.csv', skipinitialspace=True)
-    
-    # P_yes = len(data[data['buys_computer'] == 'yes'])/len(data['buys_computer'])
-    # P_no = len(data[data['buys_computer'] == 'no'])/len(data['buys_computer'])
-    # # print(P_yes, P_no)
-    # class_label_yes = {'buys_computer': 'yes'}
-    # label_dict_age = {'age': '<=30'}
-    # label_dict_income = {'income': 'medium'}
-    # label_dict_student = {'student': 'yes'}
-    # label_dict_credit = {'credit_rating': 'fair'}
-    # bayesian_age_yes = naive_bayesian(df=data, label_dict=label_dict_age, 
-    #                                   class_label=class_label_yes)
-    # bayesian_income_yes = naive_bayesian(df=data, label_dict=label_dict_income, 
-    #                                      class_label=class_label_yes)
-    # bayesian_student_yes = naive_bayesian(df=data, label_dict=label_dict_student, 
-    #                                       class_label=class_label_yes)
-    # bayesian_credit_yes = naive_bayesian(df=data, label_dict=label_dict_credit, 
-    #                                      class_label=class_label_yes)
-    # assert np.allclose([bayesian_age_yes, bayesian_income_yes, 
-    #                     bayesian_student_yes, bayesian_credit_yes],
-    #                     [0.222, 0.444, 0.667, 0.667], rtol=1e-2)
-    # class_label_no = {'buys_computer': 'no'}
-    # bayesian_age_no = naive_bayesian(df=data, label_dict=label_dict_age, 
-    #                                  class_label=class_label_no)
-    # bayesian_income_no = naive_bayesian(df=data, label_dict=label_dict_income, 
-    #                                     class_label=class_label_no)
-    # bayesian_student_no = naive_bayesian(df=data, label_dict=label_dict_student, 
-    #                                      class_label=class_label_no)
-    # bayesian_credit_no = naive_bayesian(df=data, label_dict=label_dict_credit, 
-    #                                     class_label=class_label_no)
-    # assert np.allclose([bayesian_age_no, bayesian_income_no, 
-    #                     bayesian_student_no, bayesian_credit_no],
-    #                     [0.6, 0.4, 0.2, 0.4], rtol=1e-2)
-
-    # person_X = {'age': '<=30', 'income': 'medium', 'student': 'yes', 'credit_rating': 'fair'}
-    # class_label_yes = {'buys_computer': 'yes'}
-    # class_label_no = {'buys_computer': 'no'}
-    # PX_yes = naive_bayesian(df=data, label_dict=person_X, class_label=class_label_yes)
-    # PX_no = naive_bayesian(df=data, label_dict=person_X, class_label=class_label_no)
-    # assert np.allclose([PX_yes, PX_no], [0.0438, 0.0192], rtol=1e-2)
-
-    # # yes probability for class X 
-    # PX_yes_P_yes = PX_yes * P_yes
-    # PX_no_P_no = PX_no * P_no
-    # assert np.allclose([PX_yes_P_yes, PX_no_P_no], [0.02822, 0.00686], rtol=1e-2)
-    # # print(f'PX_yes * P_yes: {PX_yes_P_yes:.4f}')
-    # # print(f'PX_no * P_no: {PX_no_P_no:.4f}')
-
-    # data = pd.read_csv('data/classifier_ex.csv', skipinitialspace=True, index_col=0)
-    # acc = accuracy(data)
-    # prec = precision(data)
-    # rec = recall(data)
-    # assert np.allclose([acc, prec, rec], [0.965, 0.3913, 0.3], rtol=1e-2)
-
-    # ## PRECISION, ACCURACY, RECALL
-    # data2 = pd.read_csv('data/midterm_classifier.csv', skipinitialspace=True, index_col=0)
-    # acc = accuracy(data2)
-    # prec = precision(data2)
-    # rec = recall(data2)
-    # # print(acc*100, prec*100, rec*100)
-
-
-    # ## INFO GAIN, BAYESIAN
-    # data = pd.read_csv('data/midterm_info.csv', skipinitialspace=True)
-
-    # # info D
-    # Dy = len(data[data['bigtip'] == 'yes'])
-    # Dn = len(data[data['bigtip'] == 'no'])
-    # Dtot = Dy + Dn
-    # infoD =  entropy(p_list=[Dy/Dtot, Dn/Dtot])
-
-    # # info food
-    # foodset1 = data[data['food'] == 'good']
-    # foodset1yes = foodset1[foodset1['bigtip'] == 'yes' ]
-    # foodset2 = data[data['food'] =='mediocre']
-    # foodset2yes = foodset2[foodset2['bigtip'] == 'yes' ]
-    # foodset3 = data[data['food'] =='yikes']
-    # foodset3yes = foodset3[foodset3['bigtip'] == 'yes' ]
-    # lens_food = [len(foodset1), len(foodset2), len(foodset3)]
-    # lens_foody = [len(foodset1yes), len(foodset2yes), len(foodset3yes)]
-    # info_food = info_subset(lens1=lens_food, lens2=lens_foody)
-    # gain_food = info_D - info_food
-    # # print(gain_food)
-
-
-
-    # X_yes = {'food': 'good', 'speedy': 'yes', 'price': 'high'}
-    # class_label = {'bigtip': 'yes'}
-    # PX_yes = naive_bayesian(df=data, label_dict=X_yes, class_label=class_label)
-    # # print(PX_yes)
 
 
 
 
 
 
-
-
-
+def project_classification():
     ## project
+    get_gain_table = False
     # finding gains for split
+    if get_info_gain:
     data = pd.read_csv('data/integrated_data_v3.csv', skipinitialspace=True, 
                         header=0, dtype = str)
     data = data.dropna( how='any', subset=['Vaccine_1', 'Vaccine_2', 'CanadaQ_1'])
@@ -471,12 +180,12 @@ if __name__ == '__main__':
     df_gain.to_csv('data/gain_summary.csv')
 
 
-    exit()
 
 
+    df = pd.read_csv('data/gain_summary.csv')
     df = df_gain.head(6)
     df = df.append(df_gain.tail(6))
-    print(df)
+    # print(df)
     gain_table = go.Figure(data=[go.Table(
                     header=dict(values=list(df.columns),
                                 align='left'),
@@ -657,9 +366,298 @@ if __name__ == '__main__':
     print(data_serious)
 
 
+if __name__ == '__main__':
 
+
+    # example 8b - using entropy
+    D_total_8b = 30
+    p_list_8b = [16/D_total_8b, 14/D_total_8b]
+    infoD_8b = entropy(p_list=p_list_8b)
+    assert np.allclose(infoD_8b, 0.99, rtol=1e-2)
+
+    # example 8b - using entropy and finding info gains manually
+    class_yes_8b = 9
+    class_no_8b = 5
+    D_total_8b = sum((class_yes_8b, class_no_8b))
+    p_list_8b = [class_yes_8b/D_total_8b, class_no_8b/D_total_8b]
+    infoD_8b2 = entropy(p_list=p_list_8b)
+    info_age_8b2 = 5/14*entropy([2/5,3/5]) + 4/14*entropy([4/4,0/4]) \
+             + 5/14*entropy([3/5,2/5])
+    gain_age_8b2 = infoD_8b2 - info_age_8b2
+    assert np.allclose(infoD_8b2, 0.940, rtol=1e-2)
+    assert np.allclose(info_age_8b2, 0.694, rtol=1e-2)
+    assert np.allclose(gain_age_8b2, 0.246, rtol=1e-2)
+
+    # example 8b - using entropy and finding info gains automatically
+    info_age_8b3 = info_subset(lens1=[5,4,5], lens2=[2,4,3])
+    gain_age_8b3 = info_gain(infoD_8b2, info_age_8b3)
+    assert np.allclose([info_age_8b2, gain_age_8b2], [info_age_8b3, gain_age_8b3])
+
+
+    ## another decision tree example
+    data_ex = pd.read_csv('data/decisiontree_ex.csv', skipinitialspace=True)
+
+    # ex-1: info D for decisiontree_ex.csv example by entropy
+    D_len1_ex1 = len(data_ex[data_ex['buys_computer'] == 'yes'])
+    D_len2_ex1 = len(data_ex[data_ex['buys_computer'] == 'no'])
+    D_total_ex1 = sum((D_len1_ex1, D_len2_ex1))
+    infoD_ex1a =  entropy(p_list=[D_len1_ex1/D_total_ex1, D_len2_ex1/D_total_ex1])
+    assert np.allclose(infoD_ex1a, 0.940, rtol=1e-2)
+    # info D by dictionary function
+    classlabels_ex = {'buys_computer': ('yes', 'no')}
+    infoD_ex1b = info_D(df_data=data_ex, allclasslabels=classlabels_ex)
+    assert np.allclose(infoD_ex1a, infoD_ex1b, rtol=1e-2)
+
+    # ex-2: age info and gain using functions
+    classlabels_ex2 = classlabels_ex
+    ages_ex2 = {'age': ('<=30', '31-40', '>40')}
+    ages_class_ex2 = {'buys_computer': 'yes'}
+    infoD_ex2 = infoD_ex1b
+    info_ages_ex2 = info_Ci_D(df_data=data_ex, setlabels=ages_ex2, classlabel=ages_class_ex2)
+    gain_ages_ex2 = info_gain(infoD_ex2, info_ages_ex2)
+    assert np.allclose(gain_ages_ex2, 0.246, rtol=1e-2)
+    # testing all-in-one function
+    gain_ages_ex2b = get_info_gain(df=data_ex, setlabels=ages_ex2, classlabel=ages_class_ex2, 
+                             allclasslabels=classlabels_ex2)
+    assert np.allclose(gain_ages_ex2b, 0.246, rtol=1e-2)
+
+    # ex-3: age info and gain manually using infoD from above
+    infoD_ex3 = infoD_ex1b
+    ageset1_ex3 = data_ex[data_ex['age'] == '<=30']
+    ageset1_ex3yes = ageset1_ex3[ageset1_ex3['buys_computer'] == 'yes' ]
+    ageset2_ex3 = data_ex[data_ex['age'] =='31-40']
+    ageset2_ex3yes = ageset2_ex3[ageset2_ex3['buys_computer'] == 'yes' ]
+    ageset3_ex3 = data_ex[data_ex['age'] =='>40']
+    ageset3_ex3yes = ageset3_ex3[ageset3_ex3['buys_computer'] == 'yes' ]
+    lens_age_ex3 = [len(ageset1_ex3), len(ageset2_ex3), len(ageset3_ex3)]
+    lens_age_ex3y = [len(ageset1_ex3yes), len(ageset2_ex3yes), len(ageset3_ex3yes)]
+    info_age_ex3 = info_subset(lens1=lens_age_ex3, lens2=lens_age_ex3y)
+    gain_age_ex3 = infoD_ex3 - info_age_ex3
+    assert np.allclose(gain_age_ex3, gain_ages_ex2b, rtol=1e-2)
+
+    # ex-4: age info and gain manually using infoD from above
+    infoD_ex4 = infoD_ex1b
+    income1_ex4 = data_ex[data_ex['income'] == 'high']
+    income1_ex4yes = income1_ex4[income1_ex4['buys_computer'] == 'yes' ]
+    income2_ex4 = data_ex[data_ex['income'] =='medium']
+    income2_ex4yes = income2_ex4[income2_ex4['buys_computer'] == 'yes' ]
+    income3_ex4 = data_ex[data_ex['income'] =='low']
+    income3_ex4yes = income3_ex4[income3_ex4['buys_computer'] == 'yes' ]
+    lens_income_ex4 = [len(income1_ex4), len(income2_ex4), len(income3_ex4)]
+    lens_income_ex4y = [len(income1_ex4yes), len(income2_ex4yes), len(income3_ex4yes)]
+    info_income_ex4 = info_subset(lens1=lens_income_ex4, lens2=lens_income_ex4y)
+    gain_income_ex4 = infoD_ex4 - info_income_ex4
+    assert np.allclose(gain_income_ex4, 0.029, rtol=1e-2)
+
+    # ex-5: income info and gain using functions
+    classlabels_ex5 = classlabels_ex
+    income_ex5 = {'income': ('high', 'medium', 'low')}
+    income_class_ex5 = {'buys_computer': 'yes'}
+    infoD_ex5 = infoD_ex1b
+    info_income_ex5 = info_Ci_D(df_data=data_ex, setlabels=income_ex5, classlabel=income_class_ex5)
+    gain_income_ex5 = info_gain(infoD_ex5, info_income_ex5)
+    assert np.allclose(gain_income_ex5, gain_income_ex4, rtol=1e-2)
+    # testing all-in-one function
+    gain_income_ex5b = get_info_gain(df=data_ex, setlabels=income_ex5, classlabel=income_class_ex5, 
+                             allclasslabels=classlabels_ex5)
+    assert np.allclose(gain_income_ex5b, gain_income_ex4, rtol=1e-2)
+
+    # ex-6: student info and gain manually using infoD from above
+    student1_ex6 = data_ex[data_ex['student'] == 'yes']
+    student1_ex6yes = student1_ex6[student1_ex6['buys_computer'] == 'yes' ]
+    student2_ex6 = data_ex[data_ex['student'] =='no']
+    student2_ex6yes = student2_ex6[student2_ex6['buys_computer'] == 'yes' ]
+    lens_student_ex6 = [len(student1_ex6), len(student2_ex6)]
+    lens_student_ex6y = [len(student1_ex6yes), len(student2_ex6yes)]
+    info_student_ex6 = info_subset(lens1=lens_student_ex6, lens2=lens_student_ex6y)
+    gain_student_ex6 = infoD_ex1b - info_student_ex6
+    assert np.allclose(gain_student_ex6, 0.151, rtol=1e-2)
+
+    # ex-7: student info and gain using functions
+    classlabels_ex7 = classlabels_ex
+    student_ex7 = {'student': ('yes', 'no')}
+    student_class_ex7 = {'buys_computer': 'yes'}
+    infoD_ex7 = infoD_ex1b
+    info_student_ex7 = info_Ci_D(df_data=data_ex, setlabels=student_ex7, classlabel=student_class_ex7)
+    gain_student_ex7 = info_gain(infoD_ex7, info_student_ex7)
+    assert np.allclose(gain_student_ex7, gain_student_ex6, rtol=1e-2)
+    # testing all-in-one function
+    gain_student_ex7b = get_info_gain(df=data_ex, setlabels=student_ex7, classlabel=student_class_ex7, 
+                             allclasslabels=classlabels_ex7)
+    assert np.allclose(gain_student_ex7b, gain_student_ex7, rtol=1e-2)
+
+    # ex-8: credit rating info and gain manually using infoD from above
+    credit1_ex8 = data_ex[data_ex['credit_rating'] == 'excellent']
+    credit1_ex8yes = credit1_ex8[credit1_ex8['buys_computer'] == 'yes' ]
+    credit2_ex8 = data_ex[data_ex['credit_rating'] =='fair']
+    credit2_ex8yes = credit2_ex8[credit2_ex8['buys_computer'] == 'yes' ]
+    lens_credit_ex8 = [len(credit1_ex8), len(credit2_ex8)]
+    lens_credit_ex8y = [len(credit1_ex8yes), len(credit2_ex8yes)]
+    info_credit_ex8 = info_subset(lens1=lens_credit_ex8, lens2=lens_credit_ex8y)
+    gain_credit_ex8 = infoD_ex1b - info_credit_ex8
+    assert np.allclose(gain_credit_ex8, 0.048, rtol=1e-2)
+
+    # ex-9: credit rating info and gain using functions
+    classlabels_ex9 = classlabels_ex
+    credit_ex9 = {'credit_rating': ('excellent', 'fair')}
+    credit_class_ex9 = {'buys_computer': 'yes'}
+    infoD_ex9 = infoD_ex1b
+    info_credit_ex9 = info_Ci_D(df_data=data_ex, setlabels=credit_ex9, classlabel=credit_class_ex9)
+    gain_credit_ex9 = info_gain(infoD_ex9, info_credit_ex9)
+    assert np.allclose(gain_credit_ex9, gain_credit_ex8, rtol=1e-2)
+    # testing all-in-one function
+    gain_credit_ex9b = get_info_gain(df=data_ex, setlabels=credit_ex9, classlabel=credit_class_ex9, 
+                             allclasslabels=classlabels_ex9)
+    assert np.allclose(gain_credit_ex9b, gain_credit_ex9, rtol=1e-2)
+
+
+    # ex-10: gain ratio for attribute selection
+    lens_incomes_ex10 = lens_income_ex4
+    split_income_ex10 = split_info(p_list=lens_incomes_ex10, Dtot=D_total_ex1)
+    assert np.allclose(split_income_ex10, 1.556, rtol=1e-2)
+    gain_ratio_income_ex10 = gain_income_ex5b/split_income_ex10
+    assert np.allclose(gain_ratio_income_ex10, 0.0187, rtol=1e-2)
+
+    # ex-11: gain ratio for attribute selection
+    income_ex11 = {'income': ('high', 'medium', 'low')}
+    gain_ratio_income11 = gain_ratio(df_data=data_ex, setlabels=income_ex11, gain=gain_income_ex5b)
+    assert np.allclose(gain_ratio_income11, gain_ratio_income_ex10, rtol=1e-2)
+
+
+    # ex-12 - decision tree worksheet
+    # print('>> Decision Tree Worksheet')
+    data_ex12 = pd.read_csv('data/decisiontree_ex.csv', skipinitialspace=True)
+    allclasslabels_ex12 = {'buys_computer': ('yes', 'no')}
+    infoD_WS = info_D(df_data=data_ex12, allclasslabels=allclasslabels_ex12)
+    # print(f'info_D = {infoD_WS:.3f}')
+    for age in data_ex12['age'].unique():
+        total = data_ex12[data_ex12['age'] == age]
+        total_yes = total[total['buys_computer'] == 'yes']
+        entrop = entropy(p_list= \
+            [len(total_yes)/len(total), (len(total)-len(total_yes))/len(total)])
+        # print(f'group: {age}: , entropy: {entrop:.3f}')
+    classlabel_ex12 = {'buys_computer': 'yes'}
+    setlabels = {'age': data_ex12['age'].unique()}
+    info_age_ex12 = info_Ci_D(data_ex12, setlabels, classlabel_ex12)
+    # print(f'info_age: {info_age_ex12:.3f}')
+    gain_age_ex12 = info_gain(infoD_WS, info_age_ex12)
+    # print(f'Gain(age): {gain_age_ex12:.3f}')
+    gain_income_ex12 = get_info_gain(df=data_ex12, 
+                                     setlabels={'income': data_ex12['income'].unique()}, 
+                                     classlabel={'buys_computer': 'yes'}, 
+                                     allclasslabels={'buys_computer': \
+                                         data_ex12['buys_computer'].unique()})
+    # print(f'Gain(income): {gain_income_ex12:.3f}')
+    gain_student_ex12 = get_info_gain(df=data_ex12, 
+                                     setlabels={'student': data_ex12['student'].unique()}, 
+                                     classlabel={'buys_computer': 'yes'}, 
+                                     allclasslabels={'buys_computer': \
+                                         data_ex12['buys_computer'].unique()})
+    # print(f'Gain(student): {gain_student_ex12:.3f}')
+    gain_credit_ex12 = get_info_gain(df=data_ex12, 
+                                     setlabels={'credit_rating': \
+                                         data_ex12['credit_rating'].unique()}, 
+                                     classlabel={'buys_computer': 'yes'}, 
+                                     allclasslabels={'buys_computer': \
+                                         data_ex12['buys_computer'].unique()})
+    # print(f'Gain(credit): {gain_credit_ex12:.3f}')
+    assert np.allclose([infoD_WS, gain_age_ex12, gain_income_ex12, 
+                            gain_student_ex12, gain_credit_ex12],
+                        [0.940, 0.247, 0.029, 0.152, 0.048], rtol=1e-2)
 
 
 
     exit()
+
+
+    # example 8c - naive bayesian
+    data = pd.read_csv('data/decisiontree_ex.csv', skipinitialspace=True)
+    
+    P_yes = len(data[data['buys_computer'] == 'yes'])/len(data['buys_computer'])
+    P_no = len(data[data['buys_computer'] == 'no'])/len(data['buys_computer'])
+    # print(P_yes, P_no)
+    class_label_yes = {'buys_computer': 'yes'}
+    label_dict_age = {'age': '<=30'}
+    label_dict_income = {'income': 'medium'}
+    label_dict_student = {'student': 'yes'}
+    label_dict_credit = {'credit_rating': 'fair'}
+    bayesian_age_yes = naive_bayesian(df=data, label_dict=label_dict_age, 
+                                      class_label=class_label_yes)
+    bayesian_income_yes = naive_bayesian(df=data, label_dict=label_dict_income, 
+                                         class_label=class_label_yes)
+    bayesian_student_yes = naive_bayesian(df=data, label_dict=label_dict_student, 
+                                          class_label=class_label_yes)
+    bayesian_credit_yes = naive_bayesian(df=data, label_dict=label_dict_credit, 
+                                         class_label=class_label_yes)
+    assert np.allclose([bayesian_age_yes, bayesian_income_yes, 
+                        bayesian_student_yes, bayesian_credit_yes],
+                        [0.222, 0.444, 0.667, 0.667], rtol=1e-2)
+    class_label_no = {'buys_computer': 'no'}
+    bayesian_age_no = naive_bayesian(df=data, label_dict=label_dict_age, 
+                                     class_label=class_label_no)
+    bayesian_income_no = naive_bayesian(df=data, label_dict=label_dict_income, 
+                                        class_label=class_label_no)
+    bayesian_student_no = naive_bayesian(df=data, label_dict=label_dict_student, 
+                                         class_label=class_label_no)
+    bayesian_credit_no = naive_bayesian(df=data, label_dict=label_dict_credit, 
+                                        class_label=class_label_no)
+    assert np.allclose([bayesian_age_no, bayesian_income_no, 
+                        bayesian_student_no, bayesian_credit_no],
+                        [0.6, 0.4, 0.2, 0.4], rtol=1e-2)
+
+    person_X = {'age': '<=30', 'income': 'medium', 'student': 'yes', 'credit_rating': 'fair'}
+    class_label_yes = {'buys_computer': 'yes'}
+    class_label_no = {'buys_computer': 'no'}
+    PX_yes = naive_bayesian(df=data, label_dict=person_X, class_label=class_label_yes)
+    PX_no = naive_bayesian(df=data, label_dict=person_X, class_label=class_label_no)
+    assert np.allclose([PX_yes, PX_no], [0.0438, 0.0192], rtol=1e-2)
+
+    # yes probability for class X 
+    PX_yes_P_yes = PX_yes * P_yes
+    PX_no_P_no = PX_no * P_no
+    assert np.allclose([PX_yes_P_yes, PX_no_P_no], [0.02822, 0.00686], rtol=1e-2)
+    # print(f'PX_yes * P_yes: {PX_yes_P_yes:.4f}')
+    # print(f'PX_no * P_no: {PX_no_P_no:.4f}')
+
+    data = pd.read_csv('data/classifier_ex.csv', skipinitialspace=True, index_col=0)
+    acc = accuracy(data)
+    prec = precision(data)
+    rec = recall(data)
+    assert np.allclose([acc, prec, rec], [0.965, 0.3913, 0.3], rtol=1e-2)
+
+    ## PRECISION, ACCURACY, RECALL
+    data2 = pd.read_csv('data/midterm_classifier.csv', skipinitialspace=True, index_col=0)
+    acc = accuracy(data2)
+    prec = precision(data2)
+    rec = recall(data2)
+    # print(acc*100, prec*100, rec*100)
+
+
+    ## INFO GAIN, BAYESIAN
+    data = pd.read_csv('data/midterm_info.csv', skipinitialspace=True)
+
+    # info D
+    Dy = len(data[data['bigtip'] == 'yes'])
+    Dn = len(data[data['bigtip'] == 'no'])
+    Dtot = Dy + Dn
+    infoD =  entropy(p_list=[Dy/Dtot, Dn/Dtot])
+
+    # info food
+    foodset1 = data[data['food'] == 'good']
+    foodset1yes = foodset1[foodset1['bigtip'] == 'yes' ]
+    foodset2 = data[data['food'] =='mediocre']
+    foodset2yes = foodset2[foodset2['bigtip'] == 'yes' ]
+    foodset3 = data[data['food'] =='yikes']
+    foodset3yes = foodset3[foodset3['bigtip'] == 'yes' ]
+    lens_food = [len(foodset1), len(foodset2), len(foodset3)]
+    lens_foody = [len(foodset1yes), len(foodset2yes), len(foodset3yes)]
+    info_food = info_subset(lens1=lens_food, lens2=lens_foody)
+    gain_food = infoD - info_food
+    # print(gain_food)
+
+    X_yes = {'food': 'good', 'speedy': 'yes', 'price': 'high'}
+    class_label = {'bigtip': 'yes'}
+    PX_yes = naive_bayesian(df=data, label_dict=X_yes, class_label=class_label)
+    # print(PX_yes)
+
 
