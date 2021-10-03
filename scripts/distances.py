@@ -442,7 +442,7 @@ if __name__ == '__main__':
     types = {'test1_nom':'nominal', 'test2_ord':'ordinal', 'test3_num':'numeric'}
     order = {'fair':1, 'good':2, 'excellent':3}
     dis_mixed = dissimilarity_mixed(dataset=dataset, types=types, order=order, symmetric=False)
-    print(dis_mixed)
+    # print(dis_mixed)
     # [[0.         0.8492     0.6508     0.13493333]
     # [0.8492     0.         0.83333333 0.7143    ]
     # [0.6508     0.83333333 0.         0.7857    ]
@@ -451,7 +451,7 @@ if __name__ == '__main__':
 
     ## nonmetric cosine similarity
     result = cosine_similarity([5, 0, 3, 0, 2, 0, 0, 2, 0, 0], [3, 0, 2, 0, 1, 1, 0, 1, 0, 1])
-    print(result) # 0.9356
+    # print(result) # 0.9356
 
 
     ## additional from slides

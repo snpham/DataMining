@@ -136,7 +136,59 @@ def recall(df):
     return df.iloc[0,0] / (df.iloc[0,0] + df.iloc[0,1])
 
 
+def gini_D(len1, len2):
+    """math function for computing gini index
+    """
+    Dtot = sum((len1, len2))
+    p_list=[len1/Dtot, len2/Dtot]
+    p_list = [i for i in p_list if i != 0]
 
+    return 1 - sum((p_i)**2 for p_i in p_list)
+
+
+def gini_index(df_data, allclasslabels):
+    """finds the gini index for a class within a dataset
+    """
+    key = list(allclasslabels.keys())[0]
+    labels = list(allclasslabels.values())[0]
+
+    if len(labels) == 2:
+        # print('class label is binary')
+        D1 = len(df_data[df_data[key] == labels[0]])
+        D2 = len(df_data[df_data[key] == labels[1]])
+        Dtot = sum((D1, D2))
+    elif len(labels) > 2:
+        print('continuous trees not implemented')
+    gini_d = gini_D(len1=D1, len2=D2)
+
+    return gini_d
+
+
+def gini_subset(df_data, setlabels, classlabel):
+    """return the gini index for the subset 
+    """
+    Dtot = len(df_data)
+    df_subset1 = df_data[df_data[list(setlabels.keys())[0]].\
+        isin(list(setlabels.values())[0])]
+    df_subset2 = df_data[np.logical_not(df_data[list(setlabels.keys())[0]].\
+        isin(list(setlabels.values())[0]))]
+
+    len1_subset1 = len(df_subset1[df_subset1[list(classlabel.keys())[0]] == \
+        list(classlabel.values())[0]])
+    len2_subset1 = len(df_subset1) - len1_subset1
+
+    len1_subset2 = len(df_subset2[df_subset2[list(classlabel.keys())[0]] == \
+        list(classlabel.values())[0]])
+    len2_subset2 = len(df_subset2) - len1_subset2
+
+    len_class_subset1 = [len1_subset1, len2_subset1]
+    len_class_subset2 = [len1_subset2, len2_subset2]
+
+    gini_i = 0
+    for sets in [len_class_subset1, len_class_subset2]:
+        gini_i += sum(sets)/Dtot*gini_D(len1=sets[0], len2=sets[1])
+
+    return gini_i
 
 
 
@@ -147,37 +199,37 @@ def project_classification():
     get_gain_table = False
     # finding gains for split
     if get_info_gain:
-    data = pd.read_csv('data/integrated_data_v3.csv', skipinitialspace=True, 
-                        header=0, dtype = str)
-    data = data.dropna( how='any', subset=['Vaccine_1', 'Vaccine_2', 'CanadaQ_1'])
-    classify_meta = pd.read_csv('data/classify_meta.csv', skipinitialspace=True, 
-                        header=0)
-    classify_meta = classify_meta.drop(classify_meta.columns[0], axis=1)
-    unique = dict()
-    uniques_list = []
-    uniques_dict = {}
-    classify_meta = classify_meta.astype('object')
-    for ii, att in enumerate(classify_meta['index']):
-        unique[att] = [x for x in list(data[att].unique()) if str(x) != 'nan']
-        uniques_list.append(unique[att])
-        uniques_dict[att] = unique[att]
-    classify_meta["possible_values"] = uniques_list
-    classify_meta.to_csv('data/classify_meta_mod.csv')
-    # infomation gain table
-    classlabels1 = {'Vaccine_1': ('1.0', '2.0')}
-    classlabel1 = {'Vaccine_1': '1.0'}
-    attribute1 = classify_meta['index']
-    attribute1_vals = classify_meta['possible_values']
-    df_gain = pd.DataFrame(columns=['attribute', 'gain'])
-    for att, values in zip(attribute1, attribute1_vals):
-        att_dict = {}
-        att_dict[att] = values
-        gain1 = get_info_gain(df=data, setlabels=att_dict, classlabel=classlabel1, 
-                              allclasslabels=classlabels1)
-        # print(att, round(gain1, 4))
-        df_gain = df_gain.append({'attribute': att, 'gain': gain1}, True)
-    df_gain = df_gain.sort_values(by='gain', ascending=False)
-    df_gain.to_csv('data/gain_summary.csv')
+        data = pd.read_csv('data/integrated_data_v3.csv', skipinitialspace=True, 
+                            header=0, dtype = str)
+        data = data.dropna( how='any', subset=['Vaccine_1', 'Vaccine_2', 'CanadaQ_1'])
+        classify_meta = pd.read_csv('data/classify_meta.csv', skipinitialspace=True, 
+                            header=0)
+        classify_meta = classify_meta.drop(classify_meta.columns[0], axis=1)
+        unique = dict()
+        uniques_list = []
+        uniques_dict = {}
+        classify_meta = classify_meta.astype('object')
+        for ii, att in enumerate(classify_meta['index']):
+            unique[att] = [x for x in list(data[att].unique()) if str(x) != 'nan']
+            uniques_list.append(unique[att])
+            uniques_dict[att] = unique[att]
+        classify_meta["possible_values"] = uniques_list
+        classify_meta.to_csv('data/classify_meta_mod.csv')
+        # infomation gain table
+        classlabels1 = {'Vaccine_1': ('1.0', '2.0')}
+        classlabel1 = {'Vaccine_1': '1.0'}
+        attribute1 = classify_meta['index']
+        attribute1_vals = classify_meta['possible_values']
+        df_gain = pd.DataFrame(columns=['attribute', 'gain'])
+        for att, values in zip(attribute1, attribute1_vals):
+            att_dict = {}
+            att_dict[att] = values
+            gain1 = get_info_gain(df=data, setlabels=att_dict, classlabel=classlabel1, 
+                                allclasslabels=classlabels1)
+            # print(att, round(gain1, 4))
+            df_gain = df_gain.append({'attribute': att, 'gain': gain1}, True)
+        df_gain = df_gain.sort_values(by='gain', ascending=False)
+        df_gain.to_csv('data/gain_summary.csv')
 
 
 
@@ -565,9 +617,59 @@ if __name__ == '__main__':
                             gain_student_ex12, gain_credit_ex12],
                         [0.940, 0.247, 0.029, 0.152, 0.048], rtol=1e-2)
 
+    # ex-13 gini index
+    gini_d_ex13 = gini_index(df_data=data_ex12, 
+        allclasslabels={'buys_computer': data_ex12['buys_computer'].unique()})
+    assert np.allclose(gini_d_ex13, 0.459, rtol=1e-2) 
+    
+    gini_inc_ex13 = gini_subset(df_data=data_ex12, 
+                                setlabels={'income': ['low', 'medium']}, 
+                                classlabel={'buys_computer': 'yes'})
+    assert np.allclose(gini_inc_ex13, 0.4428, rtol=1e-3) 
+    gini_inc2_ex13 = gini_subset(df_data=data_ex12, 
+                                setlabels={'income': ['low', 'high']}, 
+                                classlabel={'buys_computer': 'yes'})
+    assert np.allclose(gini_inc2_ex13, 0.4583, rtol=1e-3) 
+    gini_inc3_ex13 = gini_subset(df_data=data_ex12, 
+                                setlabels={'income': ['medium', 'high']}, 
+                                classlabel={'buys_computer': 'yes'})
+    assert np.allclose(gini_inc3_ex13, 0.450, rtol=1e-3) 
+
+    del_gini_inc1_ex13 = round(gini_d_ex13 - gini_inc_ex13, 4)
+    del_gini_inc2_ex13 = round(gini_d_ex13 - gini_inc2_ex13, 4)
+    del_gini_inc3_ex13 = round(gini_d_ex13 - gini_inc3_ex13, 4)
+    # print(del_gini_inc1_ex13, del_gini_inc2_ex13, del_gini_inc3_ex13)
+
+    gini_age_ex13 = gini_subset(df_data=data_ex12, 
+                                setlabels={'age': [' <=30', '31-40']}, 
+                                classlabel={'buys_computer': 'yes'})
+    assert np.allclose(gini_age_ex13, 0.3571, rtol=1e-3) 
+    # assert np.allclose(gini_age_ex13, 0.4428, rtol=1e-3) 
+    gini_age2_ex13 = gini_subset(df_data=data_ex12, 
+                                setlabels={'age': [' <=30', '>40']}, 
+                                classlabel={'buys_computer': 'yes'})
+    # print(gini_age2_ex13)
+    # assert np.allclose(gini_age2_ex13, 0.4583, rtol=1e-3) 
+    gini_age3_ex13 = gini_subset(df_data=data_ex12, 
+                                setlabels={'age': ['31-40', '>40']}, 
+                                classlabel={'buys_computer': 'yes'})
+    # print(gini_age3_ex13)
+    del_gini_age1_ex13 = round(gini_d_ex13 - gini_age_ex13, 4)
+    del_gini_age2_ex13 = round(gini_d_ex13 - gini_age2_ex13, 4)
+    del_gini_age3_ex13 = round(gini_d_ex13 - gini_age3_ex13, 4)
+    # print(del_gini_age1_ex13, del_gini_age2_ex13, del_gini_age3_ex13)
+
+    gini_student_ex13 = gini_subset(df_data=data_ex12, 
+                                setlabels={'student': ['yes']}, 
+                                classlabel={'buys_computer': 'yes'})
+    assert np.allclose(gini_student_ex13, 0.3673, rtol=1e-3) 
+
+    gini_credit_ex13 = gini_subset(df_data=data_ex12, 
+                                setlabels={'credit_rating': ['fair']}, 
+                                classlabel={'buys_computer': 'yes'})
+    assert np.allclose(gini_credit_ex13, 0.4285, rtol=1e-3) 
 
 
-    exit()
 
 
     # example 8c - naive bayesian
