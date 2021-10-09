@@ -418,8 +418,7 @@ def project_classification():
     print(data_serious)
 
 
-if __name__ == '__main__':
-
+def tests_datamining():
 
     # example 8b - using entropy
     D_total_8b = 30
@@ -763,3 +762,24 @@ if __name__ == '__main__':
     # print(PX_yes)
 
 
+if __name__ == '__main__':
+
+
+    tests_datamining()
+    
+    # csci 5622 problem set 2
+    data_ex = pd.read_csv('data/decisiontree_5622.csv', skipinitialspace=True)
+    classlabels =  {'college_degree': ('Yes', 'No')}
+
+    # info D by dictionary function
+    infoD = info_D(df_data=data_ex, allclasslabels=classlabels)
+
+    res = {'residency': ('Yes', 'No')}
+    res_class = {'college_degree': 'yes'}
+    info_res = info_Ci_D(df_data=data_ex, setlabels=res, classlabel=res_class)
+    gain_res = info_gain(infoD, info_res)
+    print(gain_res)
+    # testing all-in-one function
+    gain_resb = get_info_gain(df=data_ex, setlabels=res, classlabel=res_class, 
+                             allclasslabels=classlabels)
+    print(gain_resb)

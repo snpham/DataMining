@@ -1,0 +1,11 @@
+CID,age,salary,residency,college_degree
+1,  27, 41000,  Yes,     Yes
+2,  61, 52000,  No,      No
+3,  23, 24000,  Yes,     No
+4,  29, 77000,  Yes,     Yes
+5,  32, 48000,  No,      Yes
+6,  57, 120000, Yes,     Yes
+7,  22, 38000,  Yes,     Yes
+8,  41, 45000,  Yes,     No
+9,  53, 26000,  No,      No
+10, 48, 65000,  Yes,     Yes
