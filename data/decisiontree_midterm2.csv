@@ -1,0 +1,6 @@
+driver, x1, x2, y
+1, high, fast, yes
+2, medium, slow, no
+3, medium, fast, no
+4, medium, slow, yes
+5, medium, fast, no

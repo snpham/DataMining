@@ -389,6 +389,24 @@ if __name__ == '__main__':
     # print(result_man) # 10
     assert np.allclose(result_man_df, result_man_list)
 
+
+    x1 = [15, 600, 60]
+    x2 = [15, 250, 55]
+    x3 = [20, 10, 60]
+    x4 = [60, 100, 70]
+    x5 = [10, 90, 75]
+    y = [20, 200, 70]
+    x1o = manhattan_distance(dataset=None, x=x1, y=y)
+    x2o = manhattan_distance(dataset=None, x=x2, y=y)
+    x3o = manhattan_distance(dataset=None, x=x3, y=y)
+    x4o = manhattan_distance(dataset=None, x=x4, y=y)
+    x5o = manhattan_distance(dataset=None, x=x5, y=y)
+    print(x1o, x2o, x3o, x4o, x5o)
+
+
+
+
+
     # euclidean distance
     result_eucl_list = euclidean_distance(x=[0, 3, 4, 5], y=[7, 6, 3, -1])
     # print(result_eucl) # 9.7468
@@ -420,6 +438,7 @@ if __name__ == '__main__':
 
     df_mixed = pd.read_csv('data/mixed_sample.csv', index_col=0)
     df_ordinal = df_mixed[['test2_ord']]
+    print(df_ordinal)
     dis_mat_ord = dissimilarity_ordinal(dataset=df_ordinal, 
                                     order={'fair':1, 'good':2, 'excellent':3})
     # print(dis_mat_ord)

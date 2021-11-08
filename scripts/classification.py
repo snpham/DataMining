@@ -765,21 +765,57 @@ def tests_datamining():
 if __name__ == '__main__':
 
 
-    tests_datamining()
+    # tests_datamining()
     
-    # csci 5622 problem set 2
-    data_ex = pd.read_csv('data/decisiontree_5622.csv', skipinitialspace=True)
-    classlabels =  {'college_degree': ('Yes', 'No')}
+    # # csci 5622 problem set 2
+    # data_ex = pd.read_csv('data/decisiontree_5622.csv', skipinitialspace=True)
+    # classlabels =  {'college_degree': ('Yes', 'No')}
+
+    # # info D by dictionary function
+    # infoD = info_D(df_data=data_ex, allclasslabels=classlabels)
+
+    # res = {'residency': ('Yes', 'No')}
+    # res_class = {'college_degree': 'yes'}
+    # info_res = info_Ci_D(df_data=data_ex, setlabels=res, classlabel=res_class)
+    # gain_res = info_gain(infoD, info_res)
+    # print(gain_res)
+    # # testing all-in-one function
+    # gain_resb = get_info_gain(df=data_ex, setlabels=res, classlabel=res_class, 
+    #                          allclasslabels=classlabels)
+    # print(gain_resb)
+
+
+    # 5622 exam
+    data_ex = pd.read_csv('data/decisiontree_midterm.csv', skipinitialspace=True)
+    # print(data_ex)
+    classlabels =  {'Y': ('yes', 'no')}
 
     # info D by dictionary function
     infoD = info_D(df_data=data_ex, allclasslabels=classlabels)
+    # print(infoD)
+    action = {'x1': ('yes', 'no')}
+    classlabels = {'Y': 'yes'}
+    info_action = info_Ci_D(df_data=data_ex, setlabels=action, classlabel=classlabels)
+    # print(info_action)
+    gain_action = info_gain(infoD, info_action)
+    print(gain_action)
+    # print(infoD)
+    edu = {'x2': ('yes', 'no')}
+    classlabels2 = {'Y': 'yes'}
+    info_edu = info_Ci_D(df_data=data_ex, setlabels=edu, classlabel=classlabels2)
+    # print(info_edu)
+    gain_edu = info_gain(infoD, info_edu)
+    print(gain_edu)
 
-    res = {'residency': ('Yes', 'No')}
-    res_class = {'college_degree': 'yes'}
-    info_res = info_Ci_D(df_data=data_ex, setlabels=res, classlabel=res_class)
-    gain_res = info_gain(infoD, info_res)
-    print(gain_res)
-    # testing all-in-one function
-    gain_resb = get_info_gain(df=data_ex, setlabels=res, classlabel=res_class, 
-                             allclasslabels=classlabels)
-    print(gain_resb)
+
+    # example 8c - naive bayesian
+    data = pd.read_csv('data/decisiontree_midterm2.csv', skipinitialspace=True)
+    
+    P_yes = len(data[data['y'] == 'yes'])/len(data['y'])
+    P_no = len(data[data['y'] == 'no'])/len(data['y'])
+    print('prior', P_yes, P_no)
+    class_label_yes = {'y': 'no'}
+    label_dict_age = {'x1': 'medium', 'x2': 'slow'}
+    bayesian_age_yes = naive_bayesian(df=data, label_dict=label_dict_age, 
+                                      class_label=class_label_yes)
+    print(bayesian_age_yes)

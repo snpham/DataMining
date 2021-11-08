@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from data_helpers import mean, min_max_normalization
+from data_helpers import min_max_normalization
 from distances import manhattan_distance, simple_matching_distance
 
 
@@ -37,6 +37,7 @@ if __name__ == '__main__':
     for row in range(0, len(data_conv['Playground'])):
         data_conv.at[row, 'Playground'] = playground[data_conv.at[row, 'Playground']]
     print(data_conv)
+
     # use manhattan distances
     dfdist = pd.DataFrame(index=data_conv['Family'], columns=data_conv['Family'])
     # time
